@@ -3,7 +3,7 @@
 
 int c_setup()
 {
-  Py_SetProgramName("name");  /* optional but recommended */
+  Py_SetProgramName("python");  /* optional but recommended */
   Py_Initialize();
   return 0;
 }
