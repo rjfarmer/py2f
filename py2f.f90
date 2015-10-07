@@ -19,7 +19,21 @@ MODULE py2f
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: cmd
       END FUNCTION run
    END INTERFACE
-   
+
+   INTERFACE
+      INTEGER(C_INT) FUNCTION setp(name,val) BIND(C,NAME='c_set_int')
+      USE ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
+      INTEGER(C_INT), INTENT(IN) :: val
+      END FUNCTION setp
+   END INTERFACE
+
+   INTERFACE
+      INTEGER(C_INT) FUNCTION load_module(name) BIND(C,NAME='c_load_module')
+      USE ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
+      END FUNCTION load_module
+   END INTERFACE
    
    CONTAINS
    
@@ -44,6 +58,16 @@ MODULE py2f
       run_cmd=run(F_C_STRING_FUNC(cmd))
    END FUNCTION run_cmd
    
+   INTEGER FUNCTION set(name,val)
+      CHARACTER(LEN=*), INTENT(IN) :: name
+      INTEGER, INTENT(IN) :: val
+      set=setp(F_C_STRING_FUNC(name),val)
+   END FUNCTION set   
+   
+   INTEGER FUNCTION load_mod(name)
+      CHARACTER(LEN=*), INTENT(IN) :: name
+      load_mod=load_module(F_C_STRING_FUNC(name))
+   END FUNCTION load_mod
    
 END MODULE py2f
 
@@ -54,8 +78,11 @@ PROGRAM main
    INTEGER :: x
    
    x=setup()
-   x=run_cmd('from time import time,ctime')
-   x=run_cmd('print ctime(time())')
+   x=load_mod("numpy")
+  ! x=set('x',1)
+!    x=run_cmd('from time import time,ctime')
+!    x=run_cmd('print ctime(time())')
+   x=run_cmd('numpy.__version__')
    
    x=finish()
    
