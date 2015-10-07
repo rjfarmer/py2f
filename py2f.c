@@ -2,8 +2,9 @@
 #include "py2f.h"
 
 #define SUCCESS 0
-#define FAIL -1 
+#define FAILURE -1 
 #define MAX_STR_LEN 256
+#define MAX_MODULES 100
 
 PyObject *x;
 
@@ -13,7 +14,7 @@ typedef struct{
 } module;
   
 typedef struct {
- module mod[100];
+ module mod[MAX_MODULES];
  int c;  
 } loaded_modules;
 
@@ -45,30 +46,52 @@ int c_load_module(const char *name)
 {
    PyObject *pName;
    pName = PyString_FromString(name);
-   char *attr;
     /* Error checking of pName left out */
 
     lmod.mod[lmod.c].m = PyImport_Import(pName);
     strncpy(lmod.mod[lmod.c].name,name,MAX_STR_LEN);
     lmod.c++;
     Py_DECREF(pName);
-
-    PyObject *obj=PyObject_GetAttr(lmod.mod[0].m,PyString_FromString("__version__"));
-    attr=PyString_AsString(obj);
-    Py_DECREF(obj);
-    
-    printf("%s\n",attr);
     
    return SUCCESS;
 }
 
-int c_get_str(const char *modname, const char *name, char *value)
+
+int get_mod_num(const char *modname, int *res)
+{
+   int i;
+   signed int val=-1;
+   
+   for(i=0;i<=lmod.c;i++){
+      if(strncmp(modname,lmod.mod[i].name,MAX_STR_LEN)==0){
+         val=i;
+         break;
+      }
+   }
+   
+   if(val==-1) 
+      return FAILURE;
+   
+   *res=val;
+   return SUCCESS;
+}
+
+int c_get_str(const char *modname, const char *name, char **value)
 {
    PyObject *pName;
+   signed int modNum,err;
+   
+   err=get_mod_num(modname,&modNum);
+   if(err==FAILURE)
+      return FAILURE;
+   
    pName = PyString_FromString(name);
-   PyObject *obj=PyObject_GetAttr(modname,pName);
-   value=PyString_AsString(obj);
+   
+   PyObject *obj=PyObject_GetAttr(lmod.mod[modNum].m,pName);
+   *value=PyString_AsString(obj);
+   
    Py_DECREF(obj);
+   Py_DECREF(pName);
    
    return SUCCESS;
 }
