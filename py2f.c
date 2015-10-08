@@ -1,31 +1,20 @@
-#include <Python.h>
 #include "py2f.h"
+#include <stdio.h>
+
 
 #define SUCCESS 0
 #define FAILURE -1 
 #define MAX_STR_LEN 256
 #define MAX_MODULES 100
 
-PyObject *x;
-
-typedef struct{
-  PyObject* m;
-  char name[MAX_STR_LEN];
-} module;
-  
-typedef struct {
- module mod[MAX_MODULES];
- int c;  
-} loaded_modules;
-
-loaded_modules lmod;
+PyObject *mainmod;
 
 int c_setup()
 {
   Py_SetProgramName("python"); 
   Py_Initialize();
   
-  lmod.c=0;
+  mainmod=PyImport_AddModule("__main__");
   
   return SUCCESS;
 }
@@ -46,60 +35,86 @@ int c_load_module(const char *name)
 {
    PyObject *pName;
    pName = PyString_FromString(name);
-    /* Error checking of pName left out */
+   
+   PyImport_Import(pName);
 
-    lmod.mod[lmod.c].m = PyImport_Import(pName);
-    strncpy(lmod.mod[lmod.c].name,name,MAX_STR_LEN);
-    lmod.c++;
-    Py_DECREF(pName);
-    
+   //Py_DECREF(modules);
+   Py_DECREF(pName);
+
    return SUCCESS;
 }
 
 
-int get_mod_num(const char *modname, int *res)
+int c_get_str(const char *module, const char *name, char **value)
 {
-   int i;
-   signed int val=-1;
+   PyObject *obj;
    
-   for(i=0;i<=lmod.c;i++){
-      if(strncmp(modname,lmod.mod[i].name,MAX_STR_LEN)==0){
-         val=i;
-         break;
-      }
-   }
-   
-   if(val==-1) 
-      return FAILURE;
-   
-   *res=val;
-   return SUCCESS;
-}
+   _getVar(module,name,obj);
 
-int c_get_str(const char *modname, const char *name, char **value)
-{
-   PyObject *pName;
-   signed int modNum,err;
-   
-   err=get_mod_num(modname,&modNum);
-   if(err==FAILURE)
-      return FAILURE;
-   
-   pName = PyString_FromString(name);
-   
-   PyObject *obj=PyObject_GetAttr(lmod.mod[modNum].m,pName);
    *value=PyString_AsString(obj);
    
    Py_DECREF(obj);
-   Py_DECREF(pName);
    
    return SUCCESS;
 }
+
+int c_get_int(const char *module, const char *name, long int *value)
+{
+   PyObject *obj;
    
+   _getVar(module,name,obj);
    
-int c_set_int(const char *name, const int val)
+   value=PyInt_FromLong(obj);
+   Py_DECREF(obj);
+   
+   return SUCCESS;
+}
+
+
+int c_set_int(const char *module, const char *name, const long int val)
 {   
-   x=PyInt_FromLong(val);
-   Py_DECREF(x);
+   int ret;
+   PyObject *v;
+
+   v=PyInt_FromLong(val);
+   ret=PyDict_SetItemString(mainmod,name,v);
+
+   printf("%d\n",ret);
+   if (ret)
+      return FAILURE;
+   
+   return SUCCESS;
+}
+
+
+int _print_dict(PyObject *dict)
+{
+   PyObject *key,*value;
+   Py_ssize_t pos=0;
+   
+      while(PyDict_Next(dict,&pos,&key,&value)){
+         printf("%s %s\n",PyString_AsString(key),PyString_AsString(value));
+      }
+      
+   Py_DECREF(key);
+   Py_DECREF(value);
+   return SUCCESS;
+}
+
+int _getVar(const char *module, const char *name, PyObject *obj)
+{
+   PyObject *dict,*m;
+   if(module=='\0')
+      {
+         obj=PyDict_GetItemString(mainmod,name);
+   }else{
+      m=PyImport_GetModuleDict();      
+      dict=PyDict_GetItemString(m,module);
+      //_print_dict(m);
+      obj=PyObject_GetAttrString(dict,name);
+      Py_DECREF(dict);
+      Py_DECREF(m);
+   }
+   
    return SUCCESS;
 }
