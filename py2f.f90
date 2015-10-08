@@ -1,28 +1,30 @@
 MODULE py2f
    IMPLICIT NONE
    
+   CHARACTER(len=*),PARAMETER :: MAIN_MOD="__main__"
+   
    INTERFACE
       INTEGER(C_INT) FUNCTION setup() BIND(C,NAME='c_setup')
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       END FUNCTION setup
    END INTERFACE
    
    INTERFACE
       INTEGER(C_INT) FUNCTION finish() BIND(C,NAME='c_finish')
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       END FUNCTION finish
    END INTERFACE
    
    INTERFACE
       INTEGER(C_INT) FUNCTION run(cmd) BIND(C,NAME='c_run')
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: cmd
       END FUNCTION run
    END INTERFACE
 
    INTERFACE
       INTEGER(C_INT) FUNCTION load_module(name) BIND(C,NAME='c_load_module')
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
       END FUNCTION load_module
    END INTERFACE
@@ -30,7 +32,7 @@ MODULE py2f
    
    INTERFACE
       INTEGER(C_INT) FUNCTION get_string(m,name,str) BIND(C,NAME='c_get_str')
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: m,name
       TYPE(c_ptr),intent(out) :: str
       END FUNCTION get_string
@@ -38,7 +40,7 @@ MODULE py2f
    
    INTERFACE
       INTEGER(C_INT) FUNCTION get_integer(m,name,val) BIND(C,NAME='c_get_int')
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: m,name
       INTEGER(C_LONG),intent(out) :: val
       END FUNCTION get_integer
@@ -46,9 +48,9 @@ MODULE py2f
    
     INTERFACE
       INTEGER(C_INT) FUNCTION set_integer(m,name,val) BIND(C,NAME='c_set_int')
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: m,name
-      INTEGER(C_LONG),intent(in) :: val
+      INTEGER(C_INT),intent(in), VALUE :: val
       END FUNCTION set_integer
    END INTERFACE  
 
@@ -72,7 +74,7 @@ MODULE py2f
    END FUNCTION F_C_STRING_FUNC
 
    SUBROUTINE C_F_STRING_FUNC (C_STRING_PTR,F_STRING,length)
-      USE :: ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
       IMPLICIT NONE
       CHARACTER(LEN=*,kind=c_char), INTENT(OUT) :: F_STRING
       TYPE(c_ptr),target,intent(in)        :: C_STRING_PTR
@@ -106,7 +108,7 @@ MODULE py2f
    END FUNCTION load_mod
    
    INTEGER FUNCTION get_str(m,name,value,length)
-      USE ISO_C_BINDING
+      USE, INTRINSIC :: ISO_C_BINDING
 
       CHARACTER(LEN=*), INTENT(IN) :: m,name
       TYPE(c_ptr) :: cstr
@@ -120,18 +122,20 @@ MODULE py2f
    END FUNCTION get_str
    
    INTEGER FUNCTION get_int(m,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: m,name
-      INTEGER(8), intent(out) :: val
+      INTEGER(C_LONG), intent(out) :: val
       
-      get_int=get_integer(F_C_STRING_FUNC(m),name,val)
+      get_int=get_integer(F_C_STRING_FUNC(m),F_C_STRING_FUNC(name),val)
    
    END FUNCTION get_int
    
    INTEGER FUNCTION set_int(m,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: m,name
-      INTEGER(8), intent(in) :: val
-      
-      set_int=set_integer(F_C_STRING_FUNC(m),name,val)
+      INTEGER(C_INT), intent(in), VALUE :: val
+      write(*,*) val
+      set_int=set_integer(F_C_STRING_FUNC(m),F_C_STRING_FUNC(name),val)
    
    END FUNCTION set_int
    
@@ -143,7 +147,7 @@ PROGRAM main
    IMPLICIT NONE
    INTEGER :: x,res,length,res1,res2
    INTEGER(8) :: y
-   INTEGER(8) :: xx=5
+   INTEGER :: xx=1
    CHARACTER(len=256) :: s
    
    x=setup()
@@ -152,8 +156,8 @@ PROGRAM main
    res=get_str("numpy","__version__",s,length)
    write(*,*) res,s(1:length)
    
-   res1=set_int('',"xx",xx)
-   res2=get_int('',"xx",y)
+   res1=set_int(MAIN_MOD,"xx",xx)
+   res2=get_int(MAIN_MOD,"xx",y)
    write(*,*) y,res1,res2
 
    
