@@ -21,6 +21,7 @@ int c_setup()
 
 int c_finish()
 {
+   Py_DECREF(mainmod);
    Py_Finalize();
    return SUCCESS;
 }
@@ -38,7 +39,6 @@ int c_load_module(const char *name)
    
    PyImport_Import(pName);
 
-   //Py_DECREF(modules);
    Py_DECREF(pName);
 
    return SUCCESS;
@@ -48,11 +48,11 @@ int c_load_module(const char *name)
 int c_get_str(const char *module, const char *name, char **value)
 {
    PyObject *obj;
-   
-   _getVar(module,name,obj);
 
-   *value=PyString_AsString(obj);
+   obj=_getVar(module,name);
    
+   *value=PyString_AsString(obj);
+
    Py_DECREF(obj);
    
    return SUCCESS;
@@ -61,10 +61,10 @@ int c_get_str(const char *module, const char *name, char **value)
 int c_get_int(const char *module, const char *name, long int *value)
 {
    PyObject *obj;
+  
+   obj=_getVar(module,name);
    
-   _getVar(module,name,obj);
-   
-   value=PyInt_FromLong(obj);
+   *value=PyInt_AsLong(obj);
    Py_DECREF(obj);
    
    return SUCCESS;
@@ -77,8 +77,10 @@ int c_set_int(const char *module, const char *name, const long int val)
    PyObject *v;
 
    v=PyInt_FromLong(val);
-   ret=PyDict_SetItemString(mainmod,name,v);
-
+   
+   ret=PyModule_AddIntConstant(mainmod,name,val);
+   
+   Py_DECREF(v);
    printf("%d\n",ret);
    if (ret)
       return FAILURE;
@@ -101,20 +103,19 @@ int _print_dict(PyObject *dict)
    return SUCCESS;
 }
 
-int _getVar(const char *module, const char *name, PyObject *obj)
+PyObject* _getVar(const char *module, const char *name)
 {
-   PyObject *dict,*m;
+   PyObject *dict,*m,*obj;
    if(module=='\0')
-      {
-         obj=PyDict_GetItemString(mainmod,name);
+   {
+      obj=PyDict_GetItemString(mainmod,name);
    }else{
       m=PyImport_GetModuleDict();      
       dict=PyDict_GetItemString(m,module);
-      //_print_dict(m);
       obj=PyObject_GetAttrString(dict,name);
       Py_DECREF(dict);
       Py_DECREF(m);
    }
    
-   return SUCCESS;
+   return obj;
 }

@@ -149,7 +149,7 @@ PROGRAM main
    x=setup()
    x=load_mod("numpy")
    
-   res=get_str("numpy","__name__",s,length)
+   res=get_str("numpy","__version__",s,length)
    write(*,*) res,s(1:length)
    
    res1=set_int('',"xx",xx)
