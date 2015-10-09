@@ -7,7 +7,7 @@
 
 #define PRINTERROR printf ("Line %d of file %s (function %s)\n",\
                       __LINE__, __FILE__, __func__)
-
+                      
 PyObject *mainmod = NULL;
 PyObject *main_dict = NULL;
 
@@ -51,11 +51,11 @@ int c_load_module(const char *name)
 }
 
 
-int c_get_str(const char *name, char **value)
+int c_get_str(const char *objname, const char *name, char **value)
 {
    PyObject *obj = NULL;
 
-   obj=_getVar(name);
+   obj=_getVar(objname,name);
    
    if(!obj)
    {
@@ -78,11 +78,11 @@ int c_get_str(const char *name, char **value)
    return SUCCESS;
 }
 
-int c_get_int(const char *name, long int *value)
+int c_get_int(const char *objname, const char *name, long int *value)
 {
    PyObject *obj = NULL;
   
-   obj=_getVar(name);
+   obj=_getVar(objname,name);
    
    if(!obj)
    {
@@ -105,12 +105,26 @@ int c_get_int(const char *name, long int *value)
    return SUCCESS;
 }
 
-int c_get_double(const char *name, double *value)
+int c_get_double(const char *objname, const char *name, double *value)
 {
    PyObject *obj = NULL;
    
-   obj=_getVar(name);
+   obj=_getVar(objname,name);
+   if(!obj)
+   {
+      PRINTERROR;
+      printf("%s\n",name);
+      return FAILURE;
+   } 
+   
    *value=PyFloat_AsDouble(obj);
+   
+   if(!value)
+   {
+      PRINTERROR;
+      printf("%s\n",name);
+      return FAILURE;
+   } 
    
    Py_XDECREF(obj);
    
@@ -118,12 +132,12 @@ int c_get_double(const char *name, double *value)
 }
 
 
-int c_set_int(const char *name, const int val)
+int c_set_int(const char *objname, const char *name, const int val)
 {   
    PyObject *v;
    int ret;
    
-   v=PyInt_FromLong(1);
+   v=PyInt_FromLong(val);
    
    if(!v)
    {
@@ -132,14 +146,14 @@ int c_set_int(const char *name, const int val)
       return FAILURE;
    }
       
-   ret=_setVar(name,v);
+   ret=_setVar(objname,name,v);
    Py_XDECREF(v);
    
    return ret;
 }
 
 
-int c_set_double(const char *name, const double val)
+int c_set_double(const char *objname, const char *name, const double val)
 {   
    PyObject *v;
    v=PyFloat_FromDouble(val);
@@ -151,13 +165,13 @@ int c_set_double(const char *name, const double val)
       Py_XDECREF(v);
       return FAILURE;
    }
-   ret=_setVar(name,v);
+   ret=_setVar(objname,name,v);
    Py_XDECREF(v);
    
    return ret;
 }
 
-int c_set_str(const char *name, const char *val)
+int c_set_str(const char *objname, const char *name, const char *val)
 {   
    PyObject *v;
    v=PyString_FromString(val);
@@ -170,7 +184,7 @@ int c_set_str(const char *name, const char *val)
       return FAILURE;
    }
    
-   ret=_setVar(name,v);
+   ret=_setVar(objname,name,v);
    Py_XDECREF(v);
    
    return ret;
@@ -192,25 +206,70 @@ int _print_dict(PyObject *dict)
    return SUCCESS;
 }
 
-PyObject* _getVar(const char *name)
+PyObject* _getVar(const char *objname, const char *name)
 {
    PyObject *val = NULL;
-
-   if(PyObject_HasAttrString(mainmod,name))
+   PyObject *tmp = NULL;
+   PyObject *pynull = NULL;
+   
+   
+   if(PyObject_HasAttrString(mainmod,objname))
    {
-      val=PyObject_GetAttrString(mainmod,name);
-      return val;
-   }   
-
+      tmp=PyObject_GetAttrString(mainmod,objname);
+      
+      if(!tmp)
+      {
+         PRINTERROR;
+         printf("%s\n",name);
+         Py_XDECREF(tmp);
+         return pynull;
+      } 
+      
+      if(PyObject_HasAttrString(tmp,name))
+      {
+         val=PyObject_GetAttrString(tmp,name);
+         Py_XDECREF(tmp);
+      }
+      else
+      {
+         printf("No variable %s in %s\n",name,objname);
+         Py_XDECREF(tmp);
+         return pynull;
+      }
+   }
+   else if(PyObject_HasAttrString(mainmod,name))
+   {
+      val=PyObject_GetAttrString(mainmod,name); 
+   }
+   
    return val;
 }
 
-int _setVar(const char *name, PyObject *val)
+int _setVar(const char *objname, const char *name, PyObject *val)
 {
    int ret;
+   PyObject *tmp = NULL;
    
-   ret=PyObject_SetAttrString(mainmod,name,val);
-
+   if(PyObject_HasAttrString(mainmod,objname))
+   {
+      tmp=PyObject_GetAttrString(mainmod,objname);
+      
+      if(!tmp)
+      {
+         PRINTERROR;
+         printf("%s\n",name);
+         Py_XDECREF(tmp);
+         return FAILURE;
+      } 
+      
+      ret=PyObject_SetAttrString(tmp,name,val);
+      Py_XDECREF(tmp);
+   }
+   else
+   {
+      ret=PyObject_SetAttrString(mainmod,name,val);
+   }   
+   
    if(ret){
       PRINTERROR;
       return FAILURE;
