@@ -20,4 +20,4 @@ int c_set_str(const char *name, const char* val);
 
 int _print_dict(PyObject *dict);
 PyObject* _getVar(const char *name);
-int _setVar(const char *name, PyObject *val);
+int _setVar(const char *name, PyObject *val);void _print_object(PyObject *obj, const char* name);

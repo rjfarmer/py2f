@@ -219,4 +219,60 @@ int _setVar(const char *name, PyObject *val)
    return SUCCESS;
 }
    
-
+void _print_object(PyObject *obj, const char* name)
+{
+   PyObject *repr = NULL;
+   
+   printf("DEBUG Object: %s\n",name);
+   
+   if(!obj)
+   {
+      printf("Object is null\n");
+      return;
+   }
+   
+   repr=PyObject_Repr(obj);
+   if(!repr)
+   {
+      printf("Repr:\n");
+      printf("%s\n",PyString_AsString(repr));
+   }
+   repr=NULL;
+   
+   repr=PyObject_Type(obj);
+   if(!repr)
+   {
+      printf("Type:\n");
+      printf("%s\n",PyString_AsString(repr));
+   }
+   repr=NULL;
+   
+//    if(PyObject_HasAttrString(obj,"__doc__"))
+//    {
+//       printf("Doc:\n");
+//       repr=PyObject_GetAttrString(obj,"__doc__");
+//       if(!repr)
+//       {
+//          printf("Getting __doc__ failed\n");
+//       }
+//       else
+//       {
+//          printf("%s\n",PyString_AsString(repr));
+//       }
+//          
+//    }
+//    repr=NULL;
+   
+   if(PyObject_HasAttrString(obj,"__dict__"))
+   {
+      printf("Dict:\n");
+      repr=PyObject_GetAttrString(obj,"__dict__");
+      _print_dict(repr);
+      printf("End Dict\n");
+   }
+   repr=NULL;
+   
+   printf("END DEBUG %s\n",name);
+   Py_XDECREF(repr);
+   return;
+}
