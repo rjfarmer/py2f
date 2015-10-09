@@ -6,12 +6,14 @@ Allows embedding python code inside fortran.
 make
 
 # Using
-All functions retun an int error code, check agaisnt the SUCCESS 
+All functions return an int error code, check against the SUCCESS 
 or FAILURE constants.
 
+## Startup
 ````fortran
 import py2f
 ````
+
 Import modules
 
 ````fortran
@@ -21,39 +23,49 @@ Import modules
       stop
    end if
 ````
-Initilises the code must be called before any other py2f function
+
+Initializes the code must be called before any other py2f function
+
+## End
 
 ````fortran
 res=finish()
 ````
+
 Shutdown python at the end, not much to do if it fails
+
+## Set a variable
 
 ````fortran
 res=set(str object, str name, int|double|str value)
 ````
-Creates a parmeter called name with value value. If
-you want to create the variable in the top level python namespace
+Creates a parameter called name with value value. If
+you want to create the variable in the top level python name space
 ie if you typed
+
 ````python
 x=1
 ````
-in the python interpreter, then object=MAINMOD, otherwise pass
-the name of the pyython object as a string.
 
+in the python interpreter, then object=MAINMOD, otherwise pass
+the name of the python object as a string.
+
+## Get a variable
 
 ````fortran
 res=get(str object, str name, int|double|str value)
 ````
-Gets a parmeter called name with value value. If
-the variable is in the top level python namespace, then object=MAINMOD, otherwise pass
-the name of the pyython object as a string.
+
+Gets a parameter called name with value value. If
+the variable is in the top level python name space, then object=MAINMOD, otherwise pass
+the name of the python object as a string.
 
 Note if you are getting a string then there is an extra argument
+
 ````fortran
 res=get(str object, str name, str value, int length)
 ````
-whichh returns the length of the string, anything pass length is
+which returns the length of the string, anything passed length is
 garbage.
-
 
 
