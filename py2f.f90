@@ -2,6 +2,7 @@ MODULE py2f
    IMPLICIT NONE
    
    CHARACTER(len=*),PARAMETER :: MAIN_MOD="__main__"
+   INTEGER,PARAMETER :: SUCCESS=0,FAILURE=-1
    
    INTERFACE
       INTEGER(C_INT) FUNCTION setup() BIND(C,NAME='c_setup')
@@ -31,29 +32,63 @@ MODULE py2f
    
    
    INTERFACE
-      INTEGER(C_INT) FUNCTION get_string(m,name,str) BIND(C,NAME='c_get_str')
+      INTEGER(C_INT) FUNCTION get_string(name,str) BIND(C,NAME='c_get_str')
       USE, INTRINSIC :: ISO_C_BINDING
-      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: m,name
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
       TYPE(c_ptr),intent(out) :: str
       END FUNCTION get_string
    END INTERFACE
    
    INTERFACE
-      INTEGER(C_INT) FUNCTION get_integer(m,name,val) BIND(C,NAME='c_get_int')
+      INTEGER(C_INT) FUNCTION get_integer(name,val) BIND(C,NAME='c_get_int')
       USE, INTRINSIC :: ISO_C_BINDING
-      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: m,name
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
       INTEGER(C_LONG),intent(out) :: val
       END FUNCTION get_integer
    END INTERFACE
    
-    INTERFACE
-      INTEGER(C_INT) FUNCTION set_integer(m,name,val) BIND(C,NAME='c_set_int')
+   INTERFACE
+      INTEGER(C_INT) FUNCTION get_double(name,val) BIND(C,NAME='c_get_double')
       USE, INTRINSIC :: ISO_C_BINDING
-      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: m,name
-      INTEGER(C_INT),intent(in), VALUE :: val
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
+      REAL(C_DOUBLE),intent(out) :: val
+      END FUNCTION get_double
+   END INTERFACE
+   
+    INTERFACE
+      INTEGER(C_INT) FUNCTION set_integer(name,val) BIND(C,NAME='c_set_int')
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
+      INTEGER(C_LONG),intent(in), VALUE :: val
       END FUNCTION set_integer
    END INTERFACE  
 
+    INTERFACE
+      INTEGER(C_INT) FUNCTION set_double(name,val) BIND(C,NAME='c_set_double')
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
+      REAL(C_DOUBLE),intent(in), VALUE :: val
+      END FUNCTION set_double
+   END INTERFACE  
+   
+    INTERFACE
+      INTEGER(C_INT) FUNCTION set_string(name,val) BIND(C,NAME='c_set_str')
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: val
+      END FUNCTION set_string
+   END INTERFACE  
+   
+   
+   INTERFACE set
+      module procedure set_int,set_dble,set_str
+   END INTERFACE 
+   
+   INTERFACE get
+      module procedure get_int,get_dble,get_str
+   END INTERFACE    
+   
+   
    
    
    CONTAINS
@@ -107,37 +142,61 @@ MODULE py2f
       load_mod=load_module(F_C_STRING_FUNC(name))
    END FUNCTION load_mod
    
-   INTEGER FUNCTION get_str(m,name,value,length)
+   INTEGER FUNCTION get_str(name,value,length)
       USE, INTRINSIC :: ISO_C_BINDING
 
-      CHARACTER(LEN=*), INTENT(IN) :: m,name
+      CHARACTER(LEN=*), INTENT(IN) :: name
       TYPE(c_ptr) :: cstr
       CHARACTER(len=*),intent(out) :: value
       integer, intent(out) :: length
       
-      get_str=get_string(F_C_STRING_FUNC(m),F_C_STRING_FUNC(name),cstr)
+      get_str=get_string(F_C_STRING_FUNC(name),cstr)
       
       call C_F_STRING_FUNC(cstr,value,length)
       
    END FUNCTION get_str
    
-   INTEGER FUNCTION get_int(m,name,val)
+   INTEGER FUNCTION get_int(name,val)
       USE, INTRINSIC :: ISO_C_BINDING
-      CHARACTER(len=*),intent(in) :: m,name
+      CHARACTER(len=*),intent(in) :: name
       INTEGER(C_LONG), intent(out) :: val
       
-      get_int=get_integer(F_C_STRING_FUNC(m),F_C_STRING_FUNC(name),val)
+      get_int=get_integer(F_C_STRING_FUNC(name),val)
    
    END FUNCTION get_int
    
-   INTEGER FUNCTION set_int(m,name,val)
+   INTEGER FUNCTION get_dble(name,val)
       USE, INTRINSIC :: ISO_C_BINDING
-      CHARACTER(len=*),intent(in) :: m,name
-      INTEGER(C_INT), intent(in), VALUE :: val
-      write(*,*) val
-      set_int=set_integer(F_C_STRING_FUNC(m),F_C_STRING_FUNC(name),val)
+      CHARACTER(len=*),intent(in) :: name
+      REAL(C_DOUBLE), intent(out) :: val
+      
+      get_dble=get_double(F_C_STRING_FUNC(name),val)
+   
+   END FUNCTION get_dble
+   
+   INTEGER FUNCTION set_int(name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name
+      INTEGER(C_LONG), intent(in), VALUE :: val
+      set_int=set_integer(F_C_STRING_FUNC(name),val)
    
    END FUNCTION set_int
+   
+   INTEGER FUNCTION set_dble(name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name
+      REAL(C_DOUBLE), intent(in), VALUE :: val
+      set_dble=set_double(F_C_STRING_FUNC(name),val)
+   
+   END FUNCTION set_dble
+   
+   INTEGER FUNCTION set_str(name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name
+      CHARACTER(len=*),intent(in) :: val
+      set_str=set_string(F_C_STRING_FUNC(name),F_C_STRING_FUNC(val))
+   
+   END FUNCTION set_str
    
 END MODULE py2f
 
@@ -147,19 +206,45 @@ PROGRAM main
    IMPLICIT NONE
    INTEGER :: x,res,length,res1,res2
    INTEGER(8) :: y
-   INTEGER :: xx=1
+   INTEGER(8) :: xx=1
    CHARACTER(len=256) :: s
+   DOUBLE PRECISION :: aa,bb
    
-   x=setup()
-   x=load_mod("numpy")
+   aa=10.d0
    
-   res=get_str("numpy","__version__",s,length)
-   write(*,*) res,s(1:length)
+   res=setup()
+   if(res/=SUCCESS) THEN
+      write(*,*) "Init failed"
+      stop
+   end if
+   res=load_mod("numpy")
+   if(res/=SUCCESS) THEN
+      write(*,*) "Load failed"
+      stop
+   end if
+   !x=run_cmd("import numpy as np")
+   res=set("zz","abc")
+    write(*,*) res
+    if(res/=SUCCESS) stop
+   res=get("zz",s,length)
+    write(*,*) res,s(1:length)
+    if(res/=SUCCESS) stop
    
-   res1=set_int(MAIN_MOD,"xx",xx)
-   res2=get_int(MAIN_MOD,"xx",y)
+   res1=set("xx",xx)
+   write(*,*) "res1",res1
+   if(res1/=SUCCESS) stop
+   
+   res2=get("xx",y)
+   if(res2/=SUCCESS) stop
    write(*,*) y,res1,res2
 
+   res1=set("yy",aa)
+   if(res1/=SUCCESS) stop
+   
+   res2=get("yy",bb)
+   if(res2/=SUCCESS) stop
+    write(*,*) bb,res1,res2   
+   
    
    x=finish()
    
