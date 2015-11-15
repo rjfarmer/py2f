@@ -45,9 +45,9 @@ PROGRAM main
    if(res2/=SUCCESS) stop
    write(*,*) bb,res1,res2   
    
-   xarr=(/1.d0,2.d0,3.d0/)
-   res2=set_arr_1d(MAIN_MOD,"xarr",xarr)
-   if(res2/=SUCCESS) stop   
+!    xarr=(/1.d0,2.d0,3.d0/)
+!    res2=set_arr_1d(MAIN_MOD,"xarr",xarr)
+!    if(res2/=SUCCESS) stop   
    
 
    x=finish()

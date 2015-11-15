@@ -32,7 +32,7 @@ int c_finish()
    return SUCCESS;
 }
 
-int c_run(const char *cmd)
+int c_run( const char * restrict cmd)
 {
    PyRun_SimpleString(cmd);
    return SUCCESS;
@@ -55,7 +55,7 @@ int c_run(const char *cmd)
 // }
 
 
-int c_get_str(const char *objname, const char *name, char **value)
+int c_get_str(const char * restrict objname, const char * restrict name, char ** restrict value)
 {
    PyObject *obj = NULL;
 
@@ -82,7 +82,7 @@ int c_get_str(const char *objname, const char *name, char **value)
    return SUCCESS;
 }
 
-int c_get_int(const char *objname, const char *name, long int *value)
+int c_get_int(const char * restrict objname, const char * restrict name, long int * restrict value)
 {
    PyObject *obj = NULL;
   
@@ -109,7 +109,7 @@ int c_get_int(const char *objname, const char *name, long int *value)
    return SUCCESS;
 }
 
-int c_get_double(const char *objname, const char *name, double *value)
+int c_get_double(const char * restrict objname, const char * restrict name, double * restrict value)
 {
    PyObject *obj = NULL;
    
@@ -136,7 +136,7 @@ int c_get_double(const char *objname, const char *name, double *value)
 }
 
 
-int c_set_int(const char *objname, const char *name, const int val)
+int c_set_int(const char * restrict objname, const char * restrict name, const int val)
 {   
    PyObject *v;
    int ret;
@@ -157,7 +157,7 @@ int c_set_int(const char *objname, const char *name, const int val)
 }
 
 
-int c_set_double(const char *objname, const char *name, const double val)
+int c_set_double(const char * restrict objname, const char * restrict name, const double val)
 {   
    PyObject *v;
    v=PyFloat_FromDouble(val);
@@ -175,7 +175,7 @@ int c_set_double(const char *objname, const char *name, const double val)
    return ret;
 }
 
-int c_set_str(const char *objname, const char *name, const char *val)
+int c_set_str(const char * restrict objname, const char * restrict name, const char * restrict val)
 {   
    PyObject *v;
    v=PyString_FromString(val);
@@ -223,7 +223,7 @@ int _print_dict(PyObject *dict)
    return SUCCESS;
 }
 
-PyObject* _getVar(const char *objname, const char *name)
+PyObject* _getVar(const char * restrict objname, const char * restrict name)
 {
    PyObject *val = NULL;
    PyObject *tmp = NULL;
@@ -262,7 +262,7 @@ PyObject* _getVar(const char *objname, const char *name)
    return val;
 }
 
-int _setVar(const char *objname, const char *name, PyObject *val)
+int _setVar(const char * restrict objname, const char * restrict name, PyObject *val)
 {
    int ret;
    PyObject *tmp = NULL;
@@ -295,7 +295,7 @@ int _setVar(const char *objname, const char *name, PyObject *val)
    return SUCCESS;
 }
    
-void _print_object(PyObject *obj, const char* name)
+void _print_object(PyObject *obj, const char* restrict  name)
 {
    PyObject *repr = NULL;
    
