@@ -12,6 +12,8 @@
 #define PRINTERROR printf ("Line %d of file %s (function %s)\n",\
                       __LINE__, __FILE__, __func__)
                       
+#define NOT_IMPLEMENTED printf("%s is not implemeneted yet\n",__func__)
+                      
 PyObject *mainmod = NULL;
 PyObject *main_dict = NULL;
 
@@ -244,6 +246,7 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
 //    
 //    Py_XDECREF(obj);
    
+   NOT_IMPLEMENTED;
    return SUCCESS;
 }
 
