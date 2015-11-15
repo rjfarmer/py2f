@@ -5,7 +5,7 @@ int c_finish();
 
 
 int c_run(const char *cmd);
-int c_load_module(const char *name);
+// int c_load_module(const char *name);
 
 int c_get_int(const char *obj, const char *name, long int *value);
 int c_get_double(const char *obj, const char *name, double *value);

@@ -1,5 +1,6 @@
 #Binaries
 py2f
+py2f_test
 
 # Object files
 *.o

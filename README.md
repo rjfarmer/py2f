@@ -60,12 +60,4 @@ Gets a parameter called name with value value. If
 the variable is in the top level python name space, then object=MAINMOD, otherwise pass
 the name of the python object as a string.
 
-Note if you are getting a string then there is an extra argument
-
-````fortran
-res=get(str object, str name, str value, int length)
-````
-which returns the length of the string, anything passed length is
-garbage.
-
 

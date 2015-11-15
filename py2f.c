@@ -1,6 +1,10 @@
 #include "py2f.h"
 #include <stdio.h>
 
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
+#include <numpy/arrayobject.h>
+#include <numpy/npy_common.h>
 
 #define SUCCESS 0
 #define FAILURE -1 
@@ -34,21 +38,21 @@ int c_run(const char *cmd)
    return SUCCESS;
 }
 
-int c_load_module(const char *name)
-{
-   PyObject *m = NULL;
-   int ret;
-
-   m = PyImport_ImportModule(name);
-   ret=PyDict_SetItemString(main_dict, name, m);
-   
-   Py_DECREF(m);
-   
-   if(ret)
-      return FAILURE;
-   
-   return SUCCESS;
-}
+// int c_load_module(const char *name)
+// {
+//    PyObject *m = NULL;
+//    int ret;
+// 
+//    m = PyImport_ImportModule(name);
+//    ret=PyDict_SetItemString(main_dict, name, m);
+//    
+//    Py_DECREF(m);
+//    
+//    if(ret)
+//       return FAILURE;
+//    
+//    return SUCCESS;
+// }
 
 
 int c_get_str(const char *objname, const char *name, char **value)
@@ -189,6 +193,19 @@ int c_set_str(const char *objname, const char *name, const char *val)
    
    return ret;
 }
+
+
+
+//////////////////////////////////////
+// Private functions
+// You have been warned
+//////////////////////////////////////
+
+
+
+
+
+
 
 int _print_dict(PyObject *dict)
 {

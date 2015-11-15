@@ -23,13 +23,13 @@ MODULE py2f
       END FUNCTION run
    END INTERFACE
 
-   INTERFACE
-      INTEGER(C_INT) FUNCTION load_module(name) BIND(C,NAME='c_load_module')
-      USE, INTRINSIC :: ISO_C_BINDING
-      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
-      END FUNCTION load_module
-   END INTERFACE
-   
+!    INTERFACE
+!       INTEGER(C_INT) FUNCTION load_module(name) BIND(C,NAME='c_load_module')
+!       USE, INTRINSIC :: ISO_C_BINDING
+!       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
+!       END FUNCTION load_module
+!    END INTERFACE
+!    
    
    INTERFACE
       INTEGER(C_INT) FUNCTION get_string(obj,name,str) BIND(C,NAME='c_get_str')
@@ -108,26 +108,26 @@ MODULE py2f
 
    END FUNCTION F_C_STRING_FUNC
 
-   SUBROUTINE C_F_STRING_FUNC (C_STRING_PTR,F_STRING,length)
+   SUBROUTINE C_F_STRING_FUNC (C_STRING_PTR,F_STRING)
       USE, INTRINSIC :: ISO_C_BINDING
       IMPLICIT NONE
       CHARACTER(LEN=*,kind=c_char), INTENT(OUT) :: F_STRING
       TYPE(c_ptr),target,intent(in)        :: C_STRING_PTR
       INTEGER(kind=c_int)                     :: N, l
-      INTEGER,intent(out)                      :: length 
       CHARACTER,POINTER,DIMENSION(:) :: tmp=>null()
       
       N = LEN_TRIM(F_STRING)      
       call c_f_pointer(c_string_ptr,tmp,[N])
       
       l=0
-      do while(tmp(l+1) /= c_null_char)
+      do 
+         if (tmp(l+1) == c_null_char) exit
          l=l+1
       end do
       
       l=min(l,N)
       F_string=transfer(tmp(1:l),f_string)
-      length=l
+      F_STRING(l+1:N)=''
 
    END SUBROUTINE C_F_STRING_FUNC   
    
@@ -137,22 +137,21 @@ MODULE py2f
       run_cmd=run(F_C_STRING_FUNC(cmd))
    END FUNCTION run_cmd
    
-   INTEGER FUNCTION load_mod(name)
-      CHARACTER(LEN=*), INTENT(IN) :: name
-      load_mod=load_module(F_C_STRING_FUNC(name))
-   END FUNCTION load_mod
+!    INTEGER FUNCTION load_mod(name)
+!       CHARACTER(LEN=*), INTENT(IN) :: name
+!       load_mod=load_module(F_C_STRING_FUNC(name))
+!    END FUNCTION load_mod
    
-   INTEGER FUNCTION get_str(obj,name,value,length)
+   INTEGER FUNCTION get_str(obj,name,value)
       USE, INTRINSIC :: ISO_C_BINDING
 
       CHARACTER(LEN=*), INTENT(IN) :: name,obj
       TYPE(c_ptr) :: cstr
       CHARACTER(len=*),intent(out) :: value
-      integer, intent(out) :: length
       
       get_str=get_string(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),cstr)
       
-      call C_F_STRING_FUNC(cstr,value,length)
+      call C_F_STRING_FUNC(cstr,value)
       
    END FUNCTION get_str
    
@@ -198,54 +197,6 @@ MODULE py2f
    
    END FUNCTION set_str
    
+   
+   
 END MODULE py2f
-
-
-PROGRAM main
-   use py2f
-   IMPLICIT NONE
-   INTEGER :: x,res,length,res1,res2
-   INTEGER(8) :: y
-   INTEGER(8) :: xx=1
-   CHARACTER(len=256) :: s
-   DOUBLE PRECISION :: aa,bb
-   
-   aa=10.d0
-   
-   res=setup()
-   if(res/=SUCCESS) THEN
-      write(*,*) "Init failed"
-      stop
-   end if
-   res=load_mod("numpy")
-   if(res/=SUCCESS) THEN
-      write(*,*) "Load failed"
-      stop
-   end if
-   !x=run_cmd("import numpy as np")
-   res=set(MAIN_MOD,"zz","abc")
-    write(*,*) res
-    if(res/=SUCCESS) stop
-    
-   res=get("numpy","__version__",s,length)
-    write(*,*) res,s(1:length)
-    if(res/=SUCCESS) stop
-   
-   res1=set("numpy","xxxxxxxxxxxx",xx)
-   write(*,*) "res1",res1
-!    if(res1/=SUCCESS) stop
-   
-   res2=get("numpy","xxxxxxxxxxxx",y)
-   if(res2/=SUCCESS) stop
-   write(*,*) "**",y,res1,res2
-
-   res1=set(MAIN_MOD,"yy",aa)
-   if(res1/=SUCCESS) stop
-   
-   res2=get(MAIN_MOD,"yy",bb)
-   if(res2/=SUCCESS) stop
-    write(*,*) bb,res1,res2   
-   
-   x=finish()
-   
-END PROGRAM main
