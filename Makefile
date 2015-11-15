@@ -1,6 +1,6 @@
 
 
-PYTHON3=python3.4
+#PYTHON3=python3.4
 PYTHON2=python2.7
 
 PYTHON=$(PYTHON2)
