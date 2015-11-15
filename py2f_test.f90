@@ -8,6 +8,7 @@ PROGRAM main
    CHARACTER(len=256) :: s
    DOUBLE PRECISION :: aa,bb
    DOUBLE PRECISION,DIMENSION(1:3) :: xarr
+   DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: yarr
    
    aa=10.d0
    
@@ -45,9 +46,16 @@ PROGRAM main
    if(res2/=SUCCESS) stop
    write(*,*) bb,res1,res2   
    
-!    xarr=(/1.d0,2.d0,3.d0/)
-!    res2=set_arr_1d(MAIN_MOD,"xarr",xarr)
-!    if(res2/=SUCCESS) stop   
+   xarr=(/1.d0,2.d0,3.d0/)
+   res2=set(MAIN_MOD,"xarr",(/1.d0,2.d0,3.d0/))
+   if(res2/=SUCCESS) stop   
+   
+   res=run_cmd("print xarr")
+   
+   
+   res2=get(MAIN_MOD,"xarr",yarr)
+   if(res2/=SUCCESS) stop
+   write(*,*) res2,xarr,"*",yarr ,"*",shape(yarr)
    
 
    x=finish()

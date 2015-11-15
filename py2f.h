@@ -16,9 +16,11 @@ int c_set_double(const char * restrict obj, const char * restrict name, const do
 int c_set_str(const char * restrict obj, const char * restrict name, const char* restrict  val);
 
 int c_set_double_array_1d(const char * restrict objname, const char * restrict name, const int len, double* restrict  val);
+int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double* restrict  val);
 
 //Private functions
 
+int _get_array_size(const char * restrict obj, const char * restrict name);
 int _print_dict(PyObject *dict);
 PyObject* _getVar(const char * restrict obj, const char * restrict name);
 int _setVar(const char * restrict obj, const char * restrict name, PyObject *val);

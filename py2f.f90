@@ -78,14 +78,42 @@ MODULE py2f
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: val
       END FUNCTION set_string
    END INTERFACE  
+ 
+ 
+    INTERFACE
+      INTEGER(C_INT) FUNCTION set_double_array_1d(obj,name,len_val,val) BIND(C,NAME='c_set_double_array_1d')
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name,obj
+      TYPE(C_PTR),intent(in),VALUE :: val
+      INTEGER(C_INT),INTENT(IN),VALUE :: len_val
+      END FUNCTION set_double_array_1d
+   END INTERFACE  
    
-   
-   INTERFACE set
-      module procedure set_int,set_dble,set_str
+    INTERFACE
+      INTEGER(C_INT) FUNCTION get_double_array_1d(obj,name,val) BIND(C,NAME='c_get_double_array_1d')
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name,obj
+      TYPE(C_PTR),intent(inout) :: val
+      END FUNCTION get_double_array_1d
    END INTERFACE 
    
+    INTERFACE
+      INTEGER(C_INT) FUNCTION get_array_len(obj,name) BIND(C,NAME='_get_array_len')
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name,obj
+      END FUNCTION get_array_len
+   END INTERFACE 
+   
+   INTERFACE set
+      module procedure set_int,set_dble,set_str,set_dble_arr_1d
+   END INTERFACE 
+   
+!    INTERFACE set_arr_1d
+!       module procedure set_dble_arr_1d
+!    END INTERFACE 
+   
    INTERFACE get
-      module procedure get_int,get_dble,get_str
+      module procedure get_int,get_dble,get_str,get_dble_arr_1d
    END INTERFACE    
    
    
@@ -197,6 +225,38 @@ MODULE py2f
    
    END FUNCTION set_str
    
+   INTEGER FUNCTION set_dble_arr_1d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      REAL(C_DOUBLE), intent(in),dimension(:),target :: val
+      INTEGER(C_INT) :: len_val
+      len_val=size(val,kind=C_INT)
+      
+      set_dble_arr_1d=set_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),len_val,C_LOC(val))
    
+   END FUNCTION set_dble_arr_1d
+   
+   INTEGER FUNCTION get_dble_arr_1d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      REAL(C_DOUBLE), intent(inout),ALLOCATABLE,dimension(:),target :: val
+      REAL(C_DOUBLE),pointer,dimension(:) :: val_ptr
+      TYPE(c_ptr) :: array_in
+      INTEGER(C_INT) :: arrlen
+      
+      !Get size of array
+      arrlen=get_array_len(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name))
+      write(*,*) "arlen",arrlen
+      allocate(val(arrlen))
+      val=0.d0
+      val_ptr=>val
+      
+      get_dble_arr_1d=get_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
+   
+      write(*,*) val,"*",val_ptr
+      call  C_F_POINTER(array_in,val_ptr,(/arrlen/))
+      write(*,*) val,"*",val_ptr
+   
+   END FUNCTION get_dble_arr_1d
    
 END MODULE py2f

@@ -23,6 +23,8 @@ int c_setup()
   mainmod=PyImport_ImportModule("__main__");
   main_dict=PyModule_GetDict(mainmod);
   
+  import_array();
+  
   return SUCCESS;
 }
 
@@ -195,6 +197,57 @@ int c_set_str(const char * restrict objname, const char * restrict name, const c
 }
 
 
+int c_set_double_array_1d(const char * restrict objname, const char * restrict name, const int len, double* restrict val)
+{   
+   npy_intp dims[1]={len};
+   PyObject *v=NULL;
+   int ret;
+   
+   printf("%d %lf %lf %lf\n",len,val[0],val[0],val[len-1]);
+   
+   //Create empty array
+   v=PyArray_SimpleNewFromData(1,dims,NPY_DOUBLE,val);
+   
+   if(!v)
+   {
+      PRINTERROR;
+      Py_XDECREF(v);
+      return FAILURE;
+   }
+
+   ret=_setVar(objname,name,v);
+   Py_XDECREF(v);
+   
+   return ret;
+}
+
+int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double* restrict val)
+{   
+//    PyArrayObject *obj = NULL;
+//    
+//    obj=_getVar(objname,name);
+//    if(!obj)
+//    {
+//       PRINTERROR;
+//       printf("%s\n",name);
+//       return FAILURE;
+//    } 
+//    
+//    *value=(double)PyArray_DATA(obj);
+//    
+//    if(!value)
+//    {
+//       PRINTERROR;
+//       printf("%s\n",name);
+//       return FAILURE;
+//    } 
+//    
+//    Py_XDECREF(obj);
+   
+   return SUCCESS;
+}
+
+
 
 //////////////////////////////////////
 // Private functions
@@ -202,8 +255,10 @@ int c_set_str(const char * restrict objname, const char * restrict name, const c
 //////////////////////////////////////
 
 
-
-
+int _get_array_len(const char * restrict objname, const char * restrict name)
+{
+   return (int)PyArray_Size(_getVar(objname,name));
+}
 
 
 
