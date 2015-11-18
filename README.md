@@ -47,7 +47,13 @@ ie if you typed
 x=1
 ````
 
-in the python interpreter, then object=MAINMOD, otherwise pass
+in the python interpreter, then object=MAINMOD, 
+
+````fortran
+res=set(MAINMOD,"x",1)
+````
+
+otherwise pass
 the name of the python object as a string.
 
 ## Get a variable
