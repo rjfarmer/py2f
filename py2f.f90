@@ -239,7 +239,7 @@ MODULE py2f
    INTEGER FUNCTION get_dble_arr_1d(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
-      REAL(C_DOUBLE), intent(inout),ALLOCATABLE,dimension(:),target :: val
+      REAL(C_DOUBLE),intent(inout), allocatable,dimension(:),target :: val
       REAL(C_DOUBLE),pointer,dimension(:) :: val_ptr
       TYPE(c_ptr) :: array_in
       INTEGER(C_INT) :: arrlen
@@ -249,13 +249,13 @@ MODULE py2f
       write(*,*) "arlen",arrlen
       allocate(val(arrlen))
       val=0.d0
-      val_ptr=>val
+!       val_ptr=>val
       
       get_dble_arr_1d=get_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
    
-      write(*,*) val,"*",val_ptr
-      call  C_F_POINTER(array_in,val_ptr,(/arrlen/))
-      write(*,*) val,"*",val_ptr
+       call  C_F_POINTER(array_in,val_ptr,[arrlen])
+      
+      write(*,*) "**",val_ptr
    
    END FUNCTION get_dble_arr_1d
    

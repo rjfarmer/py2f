@@ -223,29 +223,44 @@ int c_set_double_array_1d(const char * restrict objname, const char * restrict n
    return ret;
 }
 
-int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double* restrict val)
+int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double* val)
 {   
-//    PyArrayObject *obj = NULL;
-//    
-//    obj=_getVar(objname,name);
-//    if(!obj)
-//    {
-//       PRINTERROR;
-//       printf("%s\n",name);
-//       return FAILURE;
-//    } 
-//    
-//    *value=(double)PyArray_DATA(obj);
-//    
-//    if(!value)
-//    {
-//       PRINTERROR;
-//       printf("%s\n",name);
-//       return FAILURE;
-//    } 
-//    
-//    Py_XDECREF(obj);
+   PyObject *obj = NULL;
+   PyArrayObject *arr =NULL;
+   PyArray_Descr *dtype = NULL;
+   int ndim = 0;
+   npy_intp dims[NPY_MAXDIMS];
    
+   obj=_getVar(objname,name);
+   if(!obj)
+   {
+      PRINTERROR;
+      printf("%s\n",name);
+      return FAILURE;
+   } 
+   
+
+   if (PyArray_GetArrayParamsFromObject(obj, NULL, 0, &dtype,&ndim, &dims, &arr, NULL) < 0 && !arr) 
+   {
+      Py_XDECREF(obj);
+      PyArray_XDECREF(arr);
+      return FAILURE;
+   }
+   
+   val=(double*) PyArray_DATA(arr);
+   printf("carr %lf %lf %lf\n",val[0],val[1],val[2]);
+   
+   if(!val)
+   {
+      PRINTERROR;
+      printf("%s\n",name);
+      Py_XDECREF(obj);
+      PyArray_XDECREF(arr);
+      return FAILURE;
+   } 
+   
+    Py_XDECREF(obj);
+    PyArray_XDECREF(arr);
    NOT_IMPLEMENTED;
    return SUCCESS;
 }
