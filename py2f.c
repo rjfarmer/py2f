@@ -170,7 +170,7 @@ int c_set_double(const char * restrict objname, const char * restrict name, cons
 int c_set_str(const char * restrict objname, const char * restrict name, const char * restrict val)
 {   
    PyObject *v;
-   v=_PyString_FromString(val);
+   v=PyUnicode_FromString(val);
    int ret;
    
    if(!v)
@@ -492,12 +492,4 @@ char* _PyString_AsString(PyObject* str)
 #endif
 }
 
-PyObject* _PyString_FromString(const char* restrict str)
-{
-#if defined (IS_PY3K)
-   return PyUnicode_FromString(str);  
-#else
-   return PyString_FromString(str);
-#endif
-}
 
