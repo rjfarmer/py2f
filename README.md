@@ -1,4 +1,4 @@
-# py22f
+# py2f
 
 Allows embedding python code inside fortran. 
 
@@ -57,7 +57,7 @@ otherwise pass
 the name of the python object as a string.
 
 Can also pass 1d int or double arrays to set, note we pass the pointer,
-so be careful if deallocate the array.
+so be careful that after deallocating the array, you dont try and use it in python.
 
 ## Get a variable
 
@@ -69,5 +69,5 @@ Gets a parameter called name with value value. If
 the variable is in the top level python name space, then object=MAINMOD, otherwise pass
 the name of the python object as a string.
 
-Can also pass 1d int or double arrays to get and will return a copy of the array.
+Can also pass 1d int or double arrays to get, which will return a copy of the array.
 
