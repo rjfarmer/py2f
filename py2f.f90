@@ -249,11 +249,13 @@ MODULE py2f
       write(*,*) "arlen",arrlen
       allocate(val(arrlen))
       val=0.d0
-!       val_ptr=>val
+      
       
       get_dble_arr_1d=get_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
    
        call  C_F_POINTER(array_in,val_ptr,[arrlen])
+      
+      val(1:arrlen)=val_ptr(1:arrlen)
       
       write(*,*) "**",val_ptr
    

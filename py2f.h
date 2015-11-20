@@ -16,7 +16,7 @@ int c_set_double(const char * restrict obj, const char * restrict name, const do
 int c_set_str(const char * restrict obj, const char * restrict name, const char* restrict  val);
 
 int c_set_double_array_1d(const char * restrict objname, const char * restrict name, const int len, double* restrict  val);
-int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double* val);
+int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double** val);
 
 //Private functions
 

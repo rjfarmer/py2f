@@ -223,7 +223,7 @@ int c_set_double_array_1d(const char * restrict objname, const char * restrict n
    return ret;
 }
 
-int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double* val)
+int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double** val)
 {   
    PyObject *obj = NULL;
    PyArrayObject *arr =NULL;
@@ -247,8 +247,7 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
       return FAILURE;
    }
    
-   val=(double*) PyArray_DATA(arr);
-   printf("carr %lf %lf %lf\n",val[0],val[1],val[2]);
+   *val=(double*) PyArray_DATA(arr);
    
    if(!val)
    {
@@ -261,7 +260,6 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
    
     Py_XDECREF(obj);
     PyArray_XDECREF(arr);
-   NOT_IMPLEMENTED;
    return SUCCESS;
 }
 
