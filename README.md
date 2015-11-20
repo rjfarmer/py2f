@@ -105,7 +105,7 @@ Instead use:
 
 ````fortran
 res=run_cmd("temp=x.a.b")
-res=get(str MAIN_MOD,"temp",x)
+res=get(MAINMOD,"temp",x)
 ````
 
 i.e. create a local varaible in the top level namespace and access that
