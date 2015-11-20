@@ -56,6 +56,9 @@ res=set(MAINMOD,"x",1)
 otherwise pass
 the name of the python object as a string.
 
+Can also pass 1d int or double arrays to set, note we pass the pointer,
+so be careful if deallocate the array.
+
 ## Get a variable
 
 ````fortran
@@ -66,4 +69,5 @@ Gets a parameter called name with value value. If
 the variable is in the top level python name space, then object=MAINMOD, otherwise pass
 the name of the python object as a string.
 
+Can also pass 1d int or double arrays to get and will return a copy of the array.
 

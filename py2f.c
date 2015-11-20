@@ -204,9 +204,7 @@ int c_set_double_array_1d(const char * restrict objname, const char * restrict n
    npy_intp dims[1]={len};
    PyObject *v=NULL;
    int ret;
-   
-   printf("%d %lf %lf %lf\n",len,val[0],val[0],val[len-1]);
-   
+      
    //Create empty array
    v=PyArray_SimpleNewFromData(1,dims,NPY_DOUBLE,val);
    
@@ -264,6 +262,68 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
 }
 
 
+int c_set_int_array_1d(const char * restrict objname, const char * restrict name, const int len, int* restrict val)
+{   
+   npy_intp dims[1]={len};
+   PyObject *v=NULL;
+   int ret;
+      
+   //Create empty array
+   v=PyArray_SimpleNewFromData(1,dims,NPY_INT,val);
+   
+   if(!v)
+   {
+      PRINTERROR;
+      Py_XDECREF(v);
+      return FAILURE;
+   }
+
+   ret=_setVar(objname,name,v);
+   Py_XDECREF(v);
+   
+   return ret;
+}
+
+
+int c_get_int_array_1d(const char * restrict objname, const char * restrict name, int** val)
+{   
+   PyObject *obj = NULL;
+   PyArrayObject *arr =NULL;
+   PyArray_Descr *dtype = NULL;
+   int ndim = 0;
+   npy_intp dims[NPY_MAXDIMS];
+   
+   obj=_getVar(objname,name);
+   if(!obj)
+   {
+      PRINTERROR;
+      printf("%s\n",name);
+      return FAILURE;
+   } 
+   
+
+   if (PyArray_GetArrayParamsFromObject(obj, NULL, 0, &dtype,&ndim, &dims, &arr, NULL) < 0 && !arr) 
+   {
+      Py_XDECREF(obj);
+      PyArray_XDECREF(arr);
+      return FAILURE;
+   }
+   
+   *val=(int*) PyArray_DATA(arr);
+   
+   if(!val)
+   {
+      PRINTERROR;
+      printf("%s\n",name);
+      Py_XDECREF(obj);
+      PyArray_XDECREF(arr);
+      return FAILURE;
+   } 
+   
+    Py_XDECREF(obj);
+    PyArray_XDECREF(arr);
+   return SUCCESS;
+}
 
 //////////////////////////////////////
 // Private functions
