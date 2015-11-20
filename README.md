@@ -110,3 +110,11 @@ res=get(MAINMOD,"temp",x)
 
 i.e. create a local varaible in the top level namespace and access that
 
+
+and similairly setting a nested object
+
+````fortran
+res=set(MAINMOD,"temp",x)
+res=run_cmd("x.a.b=temp")
+````
+
