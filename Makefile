@@ -1,16 +1,17 @@
 
 
-#PYTHON3=python3.4
+PYTHON3=python3.4
 PYTHON2=python2.7
 
 PYTHON=$(PYTHON2)
+
 CC=gcc
 FCC=gfortran
 
 EXTRA=-g -Wall
 
 FLAGS=$(shell $(PYTHON)-config --cflags)
-LIBS=$(shell $(PYTHON)-config --ldflags)
+LIBS=$(shell $(PYTHON)-config --ldflags) 
 
 BIN=py2f
 

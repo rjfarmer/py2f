@@ -9,11 +9,15 @@
 #define SUCCESS 0
 #define FAILURE -1 
 
+#if PY_MAJOR_VERSION >= 3
+#define IS_PY3K
+#endif
+
 #define PRINTERROR printf ("Line %d of file %s (function %s)\n",\
                       __LINE__, __FILE__, __func__)
                       
 #define NOT_IMPLEMENTED printf("%s is not implemeneted yet\n",__func__)
-                      
+
 PyObject *mainmod = NULL;
 PyObject *main_dict = NULL;
 
@@ -42,22 +46,6 @@ int c_run( const char * restrict cmd)
    return SUCCESS;
 }
 
-// int c_load_module(const char *name)
-// {
-//    PyObject *m = NULL;
-//    int ret;
-// 
-//    m = PyImport_ImportModule(name);
-//    ret=PyDict_SetItemString(main_dict, name, m);
-//    
-//    Py_DECREF(m);
-//    
-//    if(ret)
-//       return FAILURE;
-//    
-//    return SUCCESS;
-// }
-
 
 int c_get_str(const char * restrict objname, const char * restrict name, char ** restrict value)
 {
@@ -72,7 +60,7 @@ int c_get_str(const char * restrict objname, const char * restrict name, char **
       return FAILURE;
    } 
    
-   *value=PyString_AsString(obj);
+   *value=_PyString_AsString(obj);
    
    if(!value)
    {
@@ -99,7 +87,7 @@ int c_get_int(const char * restrict objname, const char * restrict name, long in
       return FAILURE;
    } 
    
-   *value=PyInt_AsLong(obj);
+   *value=PyLong_AsLong(obj);
    
    if(!value)
    {
@@ -145,7 +133,7 @@ int c_set_int(const char * restrict objname, const char * restrict name, const i
    PyObject *v;
    int ret;
    
-   v=PyInt_FromLong(val);
+   v=PyLong_FromLong(val);
    
    if(!v)
    {
@@ -182,7 +170,7 @@ int c_set_double(const char * restrict objname, const char * restrict name, cons
 int c_set_str(const char * restrict objname, const char * restrict name, const char * restrict val)
 {   
    PyObject *v;
-   v=PyString_FromString(val);
+   v=_PyString_FromString(val);
    int ret;
    
    if(!v)
@@ -346,7 +334,7 @@ int _print_dict(PyObject *dict)
    
    while(PyDict_Next(dict,&pos,&key,&value))
    {
-      printf("%s %s\n",PyString_AsString(key),PyString_AsString(PyObject_Str(value)));
+      printf("%s %s\n",_PyString_AsString(key),_PyString_AsString(PyObject_Str(value)));
    }
       
    Py_XDECREF(key);
@@ -442,7 +430,7 @@ void _print_object(PyObject *obj, const char* restrict  name)
    if(!repr)
    {
       printf("Repr:\n");
-      printf("%s\n",PyString_AsString(repr));
+      printf("%s\n",_PyString_AsString(repr));
    }
    repr=NULL;
    
@@ -450,7 +438,7 @@ void _print_object(PyObject *obj, const char* restrict  name)
    if(!repr)
    {
       printf("Type:\n");
-      printf("%s\n",PyString_AsString(repr));
+      printf("%s\n",_PyString_AsString(repr));
    }
    repr=NULL;
    
@@ -464,7 +452,7 @@ void _print_object(PyObject *obj, const char* restrict  name)
 //       }
 //       else
 //       {
-//          printf("%s\n",PyString_AsString(repr));
+//          printf("%s\n",_PyString_AsString(repr));
 //       }
 //          
 //    }
@@ -483,3 +471,33 @@ void _print_object(PyObject *obj, const char* restrict  name)
    Py_XDECREF(repr);
    return;
 }
+
+
+char* _PyString_AsString(PyObject* str)
+{
+ 
+#if defined (IS_PY3K)
+    PyObject * temp_bytes = PyUnicode_AsEncodedString(str, "ASCII", "strict"); // Owned reference
+    char* res;
+    if (temp_bytes != NULL) {
+        res = strdup(PyBytes_AS_STRING(temp_bytes));
+        Py_XDECREF(temp_bytes);
+        return res;
+    } else {
+        Py_XDECREF(temp_bytes);
+        return NULL;
+    }   
+#else
+   return PyString_AsString(str);
+#endif
+}
+
+PyObject* _PyString_FromString(const char* restrict str)
+{
+#if defined (IS_PY3K)
+   return PyUnicode_FromString(str);  
+#else
+   return PyString_FromString(str);
+#endif
+}
+

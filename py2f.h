@@ -28,3 +28,9 @@ int _print_dict(PyObject *dict);
 PyObject* _getVar(const char * restrict obj, const char * restrict name);
 int _setVar(const char * restrict obj, const char * restrict name, PyObject *val);
 void _print_object(PyObject *obj, const char* restrict  name);
+
+
+// Functions that need to handle Python2 and 3
+
+char* _PyString_AsString(PyObject* str);
+PyObject* _PyString_FromString(const char* restrict str);
