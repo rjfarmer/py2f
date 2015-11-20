@@ -57,6 +57,8 @@ PROGRAM main
    if(res2/=SUCCESS) stop
    write(*,*) res2,xarr,"*",yarr ,"*",shape(yarr)
    
+   
+   res2=run_cmd("x=1;print x")
 
    x=finish()
    
