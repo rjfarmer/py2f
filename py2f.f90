@@ -125,15 +125,15 @@ MODULE py2f
    END INTERFACE 
    
    INTERFACE set
-      module procedure set_int,set_dble,set_str,set_dble_arr_1d,set_int_arr_1d
+      module procedure set_int,set_dble,set_str
+      module procedure set_dble_arr_1d
+      module procedure set_int_arr_1d
    END INTERFACE 
    
-!    INTERFACE set_arr_1d
-!       module procedure set_dble_arr_1d
-!    END INTERFACE 
-   
    INTERFACE get
-      module procedure get_int,get_dble,get_str,get_dble_arr_1d,get_int_arr_1d
+      module procedure get_int,get_dble,get_str
+      module procedure get_dble_arr_1d_ptr,get_dble_arr_1d_arr
+      module procedure get_int_arr_1d_ptr,get_int_arr_1d_arr
    END INTERFACE    
    
    
@@ -256,7 +256,24 @@ MODULE py2f
    
    END FUNCTION set_dble_arr_1d
    
-   INTEGER FUNCTION get_dble_arr_1d(obj,name,val)
+   INTEGER FUNCTION get_dble_arr_1d_ptr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      REAL(C_DOUBLE),intent(inout), pointer,dimension(:) :: val
+      TYPE(c_ptr) :: array_in
+      INTEGER(C_INT) :: arrlen
+      
+      !Get size of array
+      arrlen=get_array_len(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name))
+      allocate(val(arrlen))
+      
+      get_dble_arr_1d_ptr=get_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
+   
+      call  C_F_POINTER(array_in,val,[arrlen])
+         
+   END FUNCTION get_dble_arr_1d_ptr
+   
+   INTEGER FUNCTION get_dble_arr_1d_arr(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       REAL(C_DOUBLE),intent(inout), allocatable,dimension(:),target :: val
@@ -269,13 +286,13 @@ MODULE py2f
       allocate(val(arrlen))
       val=0.d0
       
-      get_dble_arr_1d=get_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
+      get_dble_arr_1d_arr=get_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
    
-       call  C_F_POINTER(array_in,val_ptr,[arrlen])
+      call  C_F_POINTER(array_in,val_ptr,[arrlen])
       
       val(1:arrlen)=val_ptr(1:arrlen)
    
-   END FUNCTION get_dble_arr_1d
+   END FUNCTION get_dble_arr_1d_arr
    
 
    INTEGER FUNCTION set_int_arr_1d(obj,name,val)
@@ -289,7 +306,25 @@ MODULE py2f
    
    END FUNCTION set_int_arr_1d
    
-   INTEGER FUNCTION get_int_arr_1d(obj,name,val)
+   INTEGER FUNCTION get_int_arr_1d_ptr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), pointer,dimension(:) :: val
+      TYPE(c_ptr) :: array_in
+      INTEGER(C_INT) :: arrlen
+      
+      !Get size of array
+      arrlen=get_array_len(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name))
+      allocate(val(arrlen))
+      val=0
+      
+      get_int_arr_1d_ptr=get_int_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
+   
+      call  C_F_POINTER(array_in,val,[arrlen])
+               
+   END FUNCTION get_int_arr_1d_ptr
+   
+   INTEGER FUNCTION get_int_arr_1d_arr(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       INTEGER(C_INT),intent(inout), allocatable,dimension(:),target :: val
@@ -302,13 +337,13 @@ MODULE py2f
       allocate(val(arrlen))
       val=0
       
-      
-      get_int_arr_1d=get_int_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
+      get_int_arr_1d_arr=get_int_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),array_in)
    
-       call  C_F_POINTER(array_in,val_ptr,[arrlen])
+      call  C_F_POINTER(array_in,val_ptr,[arrlen])
       
       val(1:arrlen)=val_ptr(1:arrlen)
          
-   END FUNCTION get_int_arr_1d
+   END FUNCTION get_int_arr_1d_arr   
+   
    
 END MODULE py2f

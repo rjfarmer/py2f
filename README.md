@@ -42,10 +42,10 @@ ie if you typed
 x=1
 ````
 
-in the python interpreter, then object=MAINMOD, 
+in the python interpreter, then object=MAIN_MOD, 
 
 ````fortran
-res=set(MAINMOD,"x",1)
+res=set(MAIN_MOD,"x",1)
 ````
 
 otherwise pass the name of the python object as a string.
@@ -60,10 +60,11 @@ res=get(str object, str name, int|double|str value)
 ````
 
 Gets a parameter called name with value value. If
-the variable is in the top level python name space, then object=MAINMOD, otherwise pass
+the variable is in the top level python name space, then object=MAIN_MOD, otherwise pass
 the name of the python object as a string.
 
-Can also pass 1d int or double arrays to the get function, which will return a copy of the array.
+You can also pass a 1d allocatable array or a 1d pointer to get (of type int or double). The
+array version returns a copy while the pointer version is a pointer.
 
 ## Run command
 
@@ -105,7 +106,7 @@ Instead use:
 
 ````fortran
 res=run_cmd("temp=x.a.b")
-res=get(MAINMOD,"temp",x)
+res=get(MAIN_MOD,"temp",x)
 ````
 
 i.e. create a local varaible in the top level namespace and access that
@@ -114,7 +115,7 @@ i.e. create a local varaible in the top level namespace and access that
 and similairly setting a nested object
 
 ````fortran
-res=set(MAINMOD,"temp",x)
+res=set(MAIN_MOD,"temp",x)
 res=run_cmd("x.a.b=temp")
 ````
 
