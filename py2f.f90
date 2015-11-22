@@ -4,6 +4,10 @@ MODULE py2f
    CHARACTER(len=*),PARAMETER :: MAIN_MOD=""
    INTEGER,PARAMETER :: SUCCESS=0,FAILURE=-1
    
+   public MAIN_MOD,SUCCESS,FAILURE
+   public set,get,run_cmd,setup,finish
+   private
+   
    INTERFACE
       INTEGER(C_INT) FUNCTION setup() BIND(C,NAME='c_setup')
       USE, INTRINSIC :: ISO_C_BINDING
