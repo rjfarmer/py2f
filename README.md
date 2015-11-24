@@ -50,8 +50,8 @@ res=set(MAIN_MOD,"x",1)
 
 otherwise pass the name of the python object as a string.
 
-Can also pass 1d int or double arrays to the set function, note we pass the pointer,
-so be careful that after deallocating the array, you dont try and use it in python.
+Can also pass an array of upto 5d of ints or doubles to the set function, note we pass a pointer tp the array,
+thus if the array ceases to exists (delalocate, exits functions etc) you can't then use it in python.
 
 ## Get a variable
 

@@ -27,14 +27,6 @@ MODULE py2f
       END FUNCTION run
    END INTERFACE
 
-!    INTERFACE
-!       INTEGER(C_INT) FUNCTION load_module(name) BIND(C,NAME='c_load_module')
-!       USE, INTRINSIC :: ISO_C_BINDING
-!       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name
-!       END FUNCTION load_module
-!    END INTERFACE
-!    
-   
    INTERFACE
       INTEGER(C_INT) FUNCTION get_string(obj,name,str) BIND(C,NAME='c_get_str')
       USE, INTRINSIC :: ISO_C_BINDING
@@ -84,12 +76,12 @@ MODULE py2f
    END INTERFACE  
 
     INTERFACE
-      INTEGER(C_INT) FUNCTION set_int_array_1d(obj,name,len_val,val) BIND(C,NAME='c_set_int_array_1d')
+      INTEGER(C_INT) FUNCTION set_int_array_multid(obj,name,ndims,shp,val) BIND(C,NAME='c_set_int_array_multid')
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name,obj
-      TYPE(C_PTR),intent(in),VALUE :: val
-      INTEGER(C_INT),INTENT(IN),VALUE :: len_val
-      END FUNCTION set_int_array_1d
+      TYPE(C_PTR),intent(in),VALUE :: val,shp
+      INTEGER(C_INT),INTENT(IN),VALUE :: ndims
+      END FUNCTION set_int_array_multid
    END INTERFACE  
    
     INTERFACE
@@ -101,13 +93,13 @@ MODULE py2f
    END INTERFACE 
  
     INTERFACE
-      INTEGER(C_INT) FUNCTION set_double_array_1d(obj,name,len_val,val) BIND(C,NAME='c_set_double_array_1d')
+      INTEGER(C_INT) FUNCTION set_double_array_multid(obj,name,ndims,shp,val) BIND(C,NAME='c_set_double_array_multid')
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name,obj
-      TYPE(C_PTR),intent(in),VALUE :: val
-      INTEGER(C_INT),INTENT(IN),VALUE :: len_val
-      END FUNCTION set_double_array_1d
-   END INTERFACE  
+      TYPE(C_PTR),intent(in),VALUE :: val,shp
+      INTEGER(C_INT),INTENT(IN),VALUE :: ndims
+      END FUNCTION set_double_array_multid
+   END INTERFACE 
    
     INTERFACE
       INTEGER(C_INT) FUNCTION get_double_array_1d(obj,name,val) BIND(C,NAME='c_get_double_array_1d')
@@ -126,8 +118,8 @@ MODULE py2f
    
    INTERFACE set
       module procedure set_int,set_dble,set_str
-      module procedure set_dble_arr_1d
-      module procedure set_int_arr_1d
+      module procedure set_dble_arr_1d,set_dble_arr_2d,set_dble_arr_3d,set_dble_arr_4d,set_dble_arr_5d
+      module procedure set_int_arr_1d,set_int_arr_2d,set_int_arr_3d,set_int_arr_4d,set_int_arr_5d
    END INTERFACE 
    
    INTERFACE get
@@ -249,12 +241,66 @@ MODULE py2f
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       REAL(C_DOUBLE), intent(in),dimension(:),target :: val
-      INTEGER(C_INT) :: len_val
-      len_val=size(val,kind=C_INT)
+      INTEGER(C_INT),pointer :: shp(:)
+
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
       
-      set_dble_arr_1d=set_double_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),len_val,C_LOC(val))
+      set_dble_arr_1d=set_double_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
    
    END FUNCTION set_dble_arr_1d
+   
+   INTEGER FUNCTION set_dble_arr_2d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      REAL(C_DOUBLE), intent(in),dimension(:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+       
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+
+      set_dble_arr_2d=set_double_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_dble_arr_2d
+   
+   INTEGER FUNCTION set_dble_arr_3d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      REAL(C_DOUBLE), intent(in),dimension(:,:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+       
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+
+      set_dble_arr_3d=set_double_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_dble_arr_3d
+   
+   INTEGER FUNCTION set_dble_arr_4d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      REAL(C_DOUBLE), intent(in),dimension(:,:,:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+       
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+
+      set_dble_arr_4d=set_double_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_dble_arr_4d
+   
+   INTEGER FUNCTION set_dble_arr_5d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      REAL(C_DOUBLE), intent(in),dimension(:,:,:,:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+       
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+
+      set_dble_arr_5d=set_double_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_dble_arr_5d
    
    INTEGER FUNCTION get_dble_arr_1d_ptr(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING
@@ -299,12 +345,66 @@ MODULE py2f
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       INTEGER(C_INT), intent(in),dimension(:),target :: val
-      INTEGER(C_INT) :: len_val
-      len_val=size(val,kind=C_INT)
-      
-      set_int_arr_1d=set_int_array_1d(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),len_val,C_LOC(val))
+      INTEGER(C_INT),pointer :: shp(:)
+
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+   
+      set_int_arr_1d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
    
    END FUNCTION set_int_arr_1d
+   
+   INTEGER FUNCTION set_int_arr_2d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT), intent(in),dimension(:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+   
+      set_int_arr_2d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_int_arr_2d
+   
+   INTEGER FUNCTION set_int_arr_3d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT), intent(in),dimension(:,:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+   
+      set_int_arr_3d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_int_arr_3d
+   
+   INTEGER FUNCTION set_int_arr_4d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT), intent(in),dimension(:,:,:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+   
+      set_int_arr_4d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_int_arr_4d
+   
+   INTEGER FUNCTION set_int_arr_5d(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT), intent(in),dimension(:,:,:,:,:),target :: val
+      INTEGER(C_INT),pointer :: shp(:)
+
+       allocate(shp(size(shape(val))))
+       shp=shape(val)
+   
+      set_int_arr_5d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+   
+   END FUNCTION set_int_arr_5d
    
    INTEGER FUNCTION get_int_arr_1d_ptr(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING

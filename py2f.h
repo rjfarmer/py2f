@@ -15,10 +15,11 @@ int c_set_int(const char * restrict obj, const char * restrict name, const int v
 int c_set_double(const char * restrict obj, const char * restrict name, const double val);
 int c_set_str(const char * restrict obj, const char * restrict name, const char* restrict  val);
 
-int c_set_double_array_1d(const char * restrict objname, const char * restrict name, const int len, double* restrict  val);
+// int c_set_double_array_1d(const char * restrict objname, const char * restrict name, const int len, double* restrict  val);
+int c_set_double_array_multid(const char * restrict objname, const char * restrict name, const int ndims, int* restrict shape, double** restrict val);
 int c_get_double_array_1d(const char * restrict objname, const char * restrict name, double** val);
 
-int c_set_int_array_1d(const char * restrict objname, const char * restrict name, const int len, int* restrict  val);
+int c_set_int_array_multid(const char * restrict objname, const char * restrict name, const int ndims, int* restrict shape, int** restrict val);
 int c_get_int_array_1d(const char * restrict objname, const char * restrict name, int** val);
 
 //Private functions

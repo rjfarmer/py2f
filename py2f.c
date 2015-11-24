@@ -186,15 +186,20 @@ int c_set_str(const char * restrict objname, const char * restrict name, const c
    return ret;
 }
 
-
-int c_set_double_array_1d(const char * restrict objname, const char * restrict name, const int len, double* restrict val)
+int c_set_double_array_multid(const char * restrict objname, const char * restrict name, const int ndims, int* restrict shape, double** restrict val)
 {   
-   npy_intp dims[1]={len};
+   npy_intp dims[ndims];
    PyObject *v=NULL;
-   int ret;
+   int ret,i;
+    
+   for(i=0;i<ndims;i++)
+   {
+      dims[i]=shape[i];
+   }
       
    //Create empty array
-   v=PyArray_SimpleNewFromData(1,dims,NPY_DOUBLE,val);
+   v=PyArray_SimpleNewFromData(ndims,dims,NPY_DOUBLE,val);
+   
    
    if(!v)
    {
@@ -250,14 +255,20 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
 }
 
 
-int c_set_int_array_1d(const char * restrict objname, const char * restrict name, const int len, int* restrict val)
+int c_set_int_array_multid(const char * restrict objname, const char * restrict name, const int ndims, int* restrict shape, int** restrict val)
 {   
-   npy_intp dims[1]={len};
+   npy_intp dims[ndims];
    PyObject *v=NULL;
-   int ret;
+   int ret,i;
+    
+   for(i=0;i<ndims;i++)
+   {
+      dims[i]=shape[i];
+   }
       
    //Create empty array
-   v=PyArray_SimpleNewFromData(1,dims,NPY_INT,val);
+   v=PyArray_SimpleNewFromData(ndims,dims,NPY_INT,val);
+   
    
    if(!v)
    {
@@ -271,6 +282,7 @@ int c_set_int_array_1d(const char * restrict objname, const char * restrict name
    
    return ret;
 }
+
 
 
 int c_get_int_array_1d(const char * restrict objname, const char * restrict name, int** val)

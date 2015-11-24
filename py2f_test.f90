@@ -7,7 +7,8 @@ PROGRAM main
    INTEGER(8) :: xx=1
    CHARACTER(len=256) :: s
    DOUBLE PRECISION :: aa,bb
-   DOUBLE PRECISION,DIMENSION(1:3) :: xarr
+   DOUBLE PRECISION,DIMENSION(1:6) :: xarr
+   DOUBLE PRECISION,DIMENSION(2,3) :: xarr2
    DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: yarr
    
    aa=10.d0
@@ -46,8 +47,14 @@ PROGRAM main
    if(res2/=SUCCESS) stop
    write(*,*) bb,res1,res2   
    
-   xarr=(/1.d0,2.d0,3.d0/)
-   res2=set(MAIN_MOD,"xarr",(/1.d0,2.d0,3.d0/))
+   xarr=(/1.d0,2.d0,3.d0,4.d0,5.d0,6.d0/)
+   
+   res2=set(MAIN_MOD,"xarr",xarr)
+   if(res2/=SUCCESS) stop    
+   
+   
+   xarr2=reshape(xarr,(/2,3/))
+   res2=set(MAIN_MOD,"xarr",xarr2)
    if(res2/=SUCCESS) stop   
    
    res=run_cmd("print xarr")
