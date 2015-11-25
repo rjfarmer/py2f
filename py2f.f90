@@ -4,7 +4,7 @@ MODULE py2f
    CHARACTER(len=*),PARAMETER :: MAIN_MOD=""
    INTEGER,PARAMETER :: SUCCESS=0,FAILURE=-1
    
-   public MAIN_MOD,SUCCESS,FAILURE
+   public MAIN_MOD,SUCCESS,FAILURE,dealloc
    public set,get,run_cmd,setup,finish
    private
    
@@ -25,6 +25,13 @@ MODULE py2f
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: cmd
       END FUNCTION run
+   END INTERFACE
+   
+   INTERFACE
+      INTEGER(C_INT) FUNCTION dealloc_obj(obj,name) BIND(C,NAME='c_dealloc')
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=1,kind=C_char),dimension(*),intent(in) :: name,obj
+      END FUNCTION dealloc_obj
    END INTERFACE
 
    INTERFACE
@@ -443,7 +450,15 @@ MODULE py2f
       
       val(1:arrlen)=val_ptr(1:arrlen)
          
-   END FUNCTION get_int_arr_1d_arr   
+   END FUNCTION get_int_arr_1d_arr  
+   
+   INTEGER FUNCTION dealloc get_int_arr_1d_arr(obj,name)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      
+      dealloc=dealloc_obj(obj,name)
+         
+   END FUNCTION get_int_arr_1d_arr 
    
    
 END MODULE py2f

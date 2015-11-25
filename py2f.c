@@ -46,6 +46,31 @@ int c_run( const char * restrict cmd)
    return SUCCESS;
 }
 
+int c_dellaoc(const char * restrict objname, const char * restrict name)
+{
+   PyObject *obj = NULL;
+  
+   obj=_getVar(objname,name);
+   
+   if(!obj)
+   {
+      PRINTERROR;
+      printf("%s\n",name);
+      return FAILURE;
+   } 
+   
+   for(;;)
+   {
+      Py_XDECREF(obj)
+      if(!obj)
+      {
+         break;
+      }
+   }
+   
+   return SUCCESS;
+}
+
 
 int c_get_str(const char * restrict objname, const char * restrict name, char ** restrict value)
 {
