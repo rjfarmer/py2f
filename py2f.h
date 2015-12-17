@@ -5,7 +5,7 @@ int c_finish();
 
 
 int c_run(const char * restrict cmd);
-// int c_load_module(const char *name);
+int c_dealloc(const char * restrict obj, const char * restrict name);
 
 int c_get_int(const char * restrict obj, const char * restrict name, long int * restrict value);
 int c_get_double(const char * restrict obj, const char * restrict name, double * restrict value);

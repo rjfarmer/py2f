@@ -46,10 +46,11 @@ int c_run( const char * restrict cmd)
    return SUCCESS;
 }
 
-int c_dellaoc(const char * restrict objname, const char * restrict name)
+int c_dealloc(const char * restrict objname, const char * restrict name)
 {
    PyObject *obj = NULL;
   
+	//_print_object(objname,name);
    obj=_getVar(objname,name);
    
    if(!obj)
@@ -59,14 +60,14 @@ int c_dellaoc(const char * restrict objname, const char * restrict name)
       return FAILURE;
    } 
    
-   for(;;)
-   {
-      Py_XDECREF(obj)
-      if(!obj)
-      {
-         break;
-      }
-   }
+	Py_XDECREF(obj);
+	if(!obj)
+	{
+      PRINTERROR;
+      printf("%s\n",name);
+      return FAILURE;
+	}
+
    
    return SUCCESS;
 }
@@ -224,7 +225,8 @@ int c_set_double_array_multid(const char * restrict objname, const char * restri
       
    //Create empty array
    v=PyArray_SimpleNewFromData(ndims,dims,NPY_DOUBLE,val);
-   
+   PyArray_ENABLEFLAGS(v,NPY_ARRAY_F_CONTIGUOUS);
+	PyArray_ENABLEFLAGS(v,NPY_ARRAY_OWNDATA);
    
    if(!v)
    {
@@ -293,7 +295,8 @@ int c_set_int_array_multid(const char * restrict objname, const char * restrict 
       
    //Create empty array
    v=PyArray_SimpleNewFromData(ndims,dims,NPY_INT,val);
-   
+   PyArray_ENABLEFLAGS(v,NPY_ARRAY_F_CONTIGUOUS);
+	PyArray_ENABLEFLAGS(v,NPY_ARRAY_OWNDATA);   
    
    if(!v)
    {

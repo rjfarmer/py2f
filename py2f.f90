@@ -452,13 +452,13 @@ MODULE py2f
          
    END FUNCTION get_int_arr_1d_arr  
    
-   INTEGER FUNCTION dealloc get_int_arr_1d_arr(obj,name)
+   INTEGER FUNCTION dealloc(obj,name)
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       
-      dealloc=dealloc_obj(obj,name)
+      dealloc=dealloc_obj(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name))
          
-   END FUNCTION get_int_arr_1d_arr 
+   END FUNCTION dealloc
    
    
 END MODULE py2f

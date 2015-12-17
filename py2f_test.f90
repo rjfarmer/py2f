@@ -10,6 +10,7 @@ PROGRAM main
    DOUBLE PRECISION,DIMENSION(1:6) :: xarr
    DOUBLE PRECISION,DIMENSION(2,3) :: xarr2
    DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: yarr
+   DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE :: yarr2
    
    aa=10.d0
    
@@ -62,10 +63,17 @@ PROGRAM main
    
    res2=get(MAIN_MOD,"xarr",yarr)
    if(res2/=SUCCESS) stop
-   write(*,*) res2,xarr,"*",yarr ,"*",shape(yarr)
-   
-   
-   res2=run_cmd("x=1;print x")
+   write(*,*) "yarr ",res2,xarr,"*",yarr ,"*",shape(yarr)
+
+!    res2=get(MAIN_MOD,"xarr",yarr2)
+!    if(res2/=SUCCESS) stop
+!    write(*,*) "yarr2 ",res2,xarr,"*",yarr2 ,"*",shape(yarr2)   
+ 
+   res2=dealloc(MAIN_MOD,"xarr")
+   if(res2/=SUCCESS) stop
+    res=run_cmd("print xarr")
+!    
+    res2=run_cmd("x=1;print x")
 
    x=finish()
    
