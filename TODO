@@ -1,0 +1,9 @@
+TODO
+
+Add int4 array functions
+Add real array functions
+Add all quad functions
+
+Add get functions for multid arrays (return a 1d array and reshape)
+Add function to return shape of array
+Check {s,g}et_int_array functions if they are in short or long int format 
