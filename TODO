@@ -7,3 +7,10 @@ Add all quad functions
 Add get functions for multid arrays (return a 1d array and reshape)
 Add function to return shape of array
 Check {s,g}et_int_array functions if they are in short or long int format 
+
+Cleanup warnings from py2f.c
+Add flags check for numpy 1.7 (change in the NPY_ARRAY_OWNDATA flags)
+
+Add matplotlib wrapper?
+
+Move MAIN_MOD to an optional argument
