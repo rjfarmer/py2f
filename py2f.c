@@ -48,28 +48,7 @@ int c_run( const char * restrict cmd)
 
 int c_dealloc(const char * restrict objname, const char * restrict name)
 {
-   PyObject *obj = NULL;
-  
-	//_print_object(objname,name);
-   obj=_getVar(objname,name);
-   
-   if(!obj)
-   {
-      PRINTERROR;
-      printf("%s\n",name);
-      return FAILURE;
-   } 
-   
-	Py_XDECREF(obj);
-	if(!obj)
-	{
-      PRINTERROR;
-      printf("%s\n",name);
-      return FAILURE;
-	}
-
-   
-   return SUCCESS;
+   return c_set_int(objname,name,0);
 }
 
 
@@ -214,10 +193,20 @@ int c_set_str(const char * restrict objname, const char * restrict name, const c
 
 int c_set_double_array_multid(const char * restrict objname, const char * restrict name, const int ndims, int* restrict shape, double** restrict val)
 {   
-   npy_intp dims[ndims];
+   npy_intp *dims;
    PyObject *v=NULL;
+   PyArrayObject *array=NULL;
    int ret,i;
-    
+   
+   dims=malloc(ndims);
+   if(!dims)
+   {
+      Py_XDECREF(v);
+      Py_XDECREF(array);
+      return FAILURE;
+   }
+   
+   
    for(i=0;i<ndims;i++)
    {
       dims[i]=shape[i];
@@ -225,18 +214,22 @@ int c_set_double_array_multid(const char * restrict objname, const char * restri
       
    //Create empty array
    v=PyArray_SimpleNewFromData(ndims,dims,NPY_DOUBLE,val);
-   PyArray_ENABLEFLAGS(v,NPY_ARRAY_F_CONTIGUOUS);
-	PyArray_ENABLEFLAGS(v,NPY_ARRAY_OWNDATA);
+   
+   array=(PyArrayObject*) v;
+   PyArray_ENABLEFLAGS(array,NPY_ARRAY_F_CONTIGUOUS);
+	PyArray_ENABLEFLAGS(array,NPY_ARRAY_OWNDATA);
    
    if(!v)
    {
       PRINTERROR;
       Py_XDECREF(v);
+      Py_XDECREF(array);
       return FAILURE;
    }
 
    ret=_setVar(objname,name,v);
    Py_XDECREF(v);
+   Py_XDECREF(array);
    
    return ret;
 }
@@ -247,7 +240,13 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
    PyArrayObject *arr =NULL;
    PyArray_Descr *dtype = NULL;
    int ndim = 0;
-   npy_intp dims[NPY_MAXDIMS];
+   npy_intp *dims;
+   
+   dims=malloc(NPY_MAXDIMS);
+   if(!dims)
+   {
+      return FAILURE;
+   }
    
    obj=_getVar(objname,name);
    if(!obj)
@@ -258,7 +257,7 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
    } 
    
 
-   if (PyArray_GetArrayParamsFromObject(obj, NULL, 0, &dtype,&ndim, &dims, &arr, NULL) < 0 && !arr) 
+   if (PyArray_GetArrayParamsFromObject(obj, NULL, 0, &dtype,&ndim, dims, &arr, NULL) < 0 && !arr) 
    {
       Py_XDECREF(obj);
       PyArray_XDECREF(arr);
@@ -284,10 +283,19 @@ int c_get_double_array_1d(const char * restrict objname, const char * restrict n
 
 int c_set_int_array_multid(const char * restrict objname, const char * restrict name, const int ndims, int* restrict shape, int** restrict val)
 {   
-   npy_intp dims[ndims];
+   npy_intp *dims;
    PyObject *v=NULL;
+   PyArrayObject *array=NULL;
    int ret,i;
     
+   
+   dims=malloc(ndims);
+   if(!dims)
+   {
+      Py_XDECREF(v);
+      Py_XDECREF(array);
+      return FAILURE;
+   }
    for(i=0;i<ndims;i++)
    {
       dims[i]=shape[i];
@@ -295,18 +303,21 @@ int c_set_int_array_multid(const char * restrict objname, const char * restrict 
       
    //Create empty array
    v=PyArray_SimpleNewFromData(ndims,dims,NPY_INT,val);
-   PyArray_ENABLEFLAGS(v,NPY_ARRAY_F_CONTIGUOUS);
-	PyArray_ENABLEFLAGS(v,NPY_ARRAY_OWNDATA);   
+   array=(PyArrayObject*) v;
+   PyArray_ENABLEFLAGS(array,NPY_ARRAY_F_CONTIGUOUS);
+	PyArray_ENABLEFLAGS(array,NPY_ARRAY_OWNDATA);
    
    if(!v)
    {
       PRINTERROR;
       Py_XDECREF(v);
+      Py_XDECREF(array);
       return FAILURE;
    }
 
    ret=_setVar(objname,name,v);
    Py_XDECREF(v);
+   Py_XDECREF(array);
    
    return ret;
 }
@@ -319,7 +330,13 @@ int c_get_int_array_1d(const char * restrict objname, const char * restrict name
    PyArrayObject *arr =NULL;
    PyArray_Descr *dtype = NULL;
    int ndim = 0;
-   npy_intp dims[NPY_MAXDIMS];
+   npy_intp *dims;
+   
+   dims=malloc(NPY_MAXDIMS);
+   if(!dims)
+   {
+      return FAILURE;
+   }
    
    obj=_getVar(objname,name);
    if(!obj)
@@ -330,7 +347,7 @@ int c_get_int_array_1d(const char * restrict objname, const char * restrict name
    } 
    
 
-   if (PyArray_GetArrayParamsFromObject(obj, NULL, 0, &dtype,&ndim, &dims, &arr, NULL) < 0 && !arr) 
+   if (PyArray_GetArrayParamsFromObject(obj, NULL, 0, &dtype,&ndim, dims, &arr, NULL) < 0 && !arr) 
    {
       Py_XDECREF(obj);
       PyArray_XDECREF(arr);

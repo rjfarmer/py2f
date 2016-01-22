@@ -8,7 +8,7 @@ PYTHON=$(PYTHON2)
 CC=gcc
 FCC=gfortran
 
-EXTRA=-g -Wall
+EXTRA=-ggdb -Wall
 
 FLAGS=$(shell $(PYTHON)-config --cflags)
 LIBS=$(shell $(PYTHON)-config --ldflags) 
