@@ -8,9 +8,9 @@ PYTHON=$(PYTHON2)
 CC=gcc
 FCC=gfortran
 
-EXTRA=-ggdb -Wall
+EXTRA=-ggdb -Wall -Wno-unused-dummy-argument
 
-FLAGS=$(shell $(PYTHON)-config --cflags)
+FLAGS=$(shell $(PYTHON)-config --cflags) 
 LIBS=$(shell $(PYTHON)-config --ldflags) 
 
 BIN=py2f

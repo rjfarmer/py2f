@@ -2,10 +2,12 @@ MODULE py2f
    IMPLICIT NONE
    
    CHARACTER(len=*),PARAMETER :: MAIN_MOD=""
-   INTEGER,PARAMETER :: SUCCESS=0,FAILURE=-1
+   INTEGER,PARAMETER :: SUCCESS=0
+   INTEGER,PARAMETER :: FAILURE=-1
+   INTEGER,PARAMETER :: NOT_IMPLEMENTED=-2
    
-   public MAIN_MOD,SUCCESS,FAILURE,dealloc
-   public set,get,run_cmd,setup,finish
+   public MAIN_MOD,SUCCESS,FAILURE,NOT_IMPLEMENTED
+   public set,get,run_cmd,setup,finish,dealloc
    private
    
    INTERFACE
@@ -132,7 +134,8 @@ MODULE py2f
    INTERFACE get
       module procedure get_int4,get_int8,get_real,get_dble,get_str
       module procedure get_dble_arr_1d_ptr,get_dble_arr_1d_arr
-      module procedure get_int_arr_1d_ptr,get_int_arr_1d_arr
+      module procedure get_int_arr_1d_ptr,get_int_arr_2d_ptr,get_int_arr_3d_ptr,get_int_arr_4d_ptr,get_int_arr_5d_ptr
+      module procedure get_int_arr_1d_arr,get_int_arr_2d_arr,get_int_arr_3d_arr,get_int_arr_4d_arr,get_int_arr_5d_arr
    END INTERFACE    
    
    
@@ -361,6 +364,50 @@ MODULE py2f
       call  C_F_POINTER(array_in,val,[arrlen])
                
    END FUNCTION get_int_arr_1d_ptr
+
+   INTEGER FUNCTION get_int_arr_2d_ptr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), pointer,dimension(:,:) :: val
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+      
+      get_int_arr_2d_ptr=NOT_IMPLEMENTED
+               
+   END FUNCTION get_int_arr_2d_ptr
+
+   INTEGER FUNCTION get_int_arr_3d_ptr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), pointer,dimension(:,:,:) :: val
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+      
+      get_int_arr_3d_ptr=NOT_IMPLEMENTED
+               
+   END FUNCTION get_int_arr_3d_ptr
+
+   INTEGER FUNCTION get_int_arr_4d_ptr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), pointer,dimension(:,:,:,:) :: val
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+      
+      get_int_arr_4d_ptr=NOT_IMPLEMENTED
+               
+   END FUNCTION get_int_arr_4d_ptr
+
+   INTEGER FUNCTION get_int_arr_5d_ptr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), pointer,dimension(:,:,:,:,:) :: val
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+      
+      get_int_arr_5d_ptr=NOT_IMPLEMENTED
+               
+   END FUNCTION get_int_arr_5d_ptr
    
    INTEGER FUNCTION get_int_arr_1d_arr(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING
@@ -382,7 +429,54 @@ MODULE py2f
       val(1:arrlen)=val_ptr(1:arrlen)
          
    END FUNCTION get_int_arr_1d_arr     
-   
+ 
+   INTEGER FUNCTION get_int_arr_2d_arr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), allocatable,dimension(:,:),target :: val
+!       INTEGER(C_INT),pointer,dimension(:) :: val_ptr
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+      
+      get_int_arr_2d_arr=NOT_IMPLEMENTED
+         
+   END FUNCTION get_int_arr_2d_arr 
+
+   INTEGER FUNCTION get_int_arr_3d_arr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), allocatable,dimension(:,:,:),target :: val
+!       INTEGER(C_INT),pointer,dimension(:) :: val_ptr
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+      
+      get_int_arr_3d_arr=NOT_IMPLEMENTED
+         
+   END FUNCTION get_int_arr_3d_arr 
+
+   INTEGER FUNCTION get_int_arr_4d_arr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), allocatable,dimension(:,:,:,:),target :: val
+!       INTEGER(C_INT),pointer,dimension(:) :: val_ptr
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+      
+      get_int_arr_4d_arr=NOT_IMPLEMENTED
+         
+   END FUNCTION get_int_arr_4d_arr 
+
+   INTEGER FUNCTION get_int_arr_5d_arr(obj,name,val)
+      USE, INTRINSIC :: ISO_C_BINDING
+      CHARACTER(len=*),intent(in) :: name,obj
+      INTEGER(C_INT),intent(inout), allocatable,dimension(:,:,:,:,:),target :: val
+!       INTEGER(C_INT),pointer,dimension(:) :: val_ptr
+!       TYPE(c_ptr) :: array_in
+!       INTEGER(C_INT) :: arrlen
+       
+      get_int_arr_5d_arr=NOT_IMPLEMENTED
+         
+   END FUNCTION get_int_arr_5d_arr   
    
 !!!!!!!!!!!!!!!!!!
 ! Real
