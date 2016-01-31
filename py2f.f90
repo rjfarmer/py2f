@@ -286,12 +286,12 @@ MODULE py2f
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       INTEGER(C_INT), intent(in),dimension(:),target :: val
-      INTEGER(C_INT),pointer :: shp(:)
+      INTEGER(C_INT),dimension(1),target :: shp
 
-      allocate(shp(size(shape(val))))
       shp=shape(val)
    
-      set_int_arr_1d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+      set_int_arr_1d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shp),C_LOC(shp),C_LOC(val))
+
    
    END FUNCTION set_int_arr_1d
    
@@ -299,38 +299,36 @@ MODULE py2f
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       INTEGER(C_INT), intent(in),dimension(:,:),target :: val
-      INTEGER(C_INT),pointer :: shp(:)
+      INTEGER(C_INT),dimension(2),target :: shp
 
-      allocate(shp(size(shape(val))))
       shp=shape(val)
    
-      set_int_arr_2d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
-   
+      set_int_arr_2d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shp),C_LOC(shp),C_LOC(val))
+
    END FUNCTION set_int_arr_2d
    
    INTEGER FUNCTION set_int_arr_3d(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       INTEGER(C_INT), intent(in),dimension(:,:,:),target :: val
-      INTEGER(C_INT),pointer :: shp(:)
+      INTEGER(C_INT),dimension(3),target :: shp
 
-      allocate(shp(size(shape(val))))
       shp=shape(val)
    
-      set_int_arr_3d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
-   
+      set_int_arr_3d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shp),C_LOC(shp),C_LOC(val))
+
    END FUNCTION set_int_arr_3d
    
    INTEGER FUNCTION set_int_arr_4d(obj,name,val)
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       INTEGER(C_INT), intent(in),dimension(:,:,:,:),target :: val
-      INTEGER(C_INT),pointer :: shp(:)
+      INTEGER(C_INT),dimension(4),target :: shp
 
-      allocate(shp(size(shape(val))))
       shp=shape(val)
    
-      set_int_arr_4d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+      set_int_arr_4d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shp),C_LOC(shp),C_LOC(val))
+
    
    END FUNCTION set_int_arr_4d
    
@@ -338,12 +336,11 @@ MODULE py2f
       USE, INTRINSIC :: ISO_C_BINDING
       CHARACTER(len=*),intent(in) :: name,obj
       INTEGER(C_INT), intent(in),dimension(:,:,:,:,:),target :: val
-      INTEGER(C_INT),pointer :: shp(:)
+      INTEGER(C_INT),dimension(5),target :: shp
 
-      allocate(shp(size(shape(val))))
       shp=shape(val)
    
-      set_int_arr_5d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shape(val)),C_LOC(shp),C_LOC(val))
+      set_int_arr_5d=set_int_array_multid(F_C_STRING_FUNC(obj),F_C_STRING_FUNC(name),size(shp),C_LOC(shp),C_LOC(val))
    
    END FUNCTION set_int_arr_5d
    

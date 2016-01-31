@@ -167,72 +167,83 @@ MODULE tester
       call check(set(MAIN_MOD,"x_int4Arr_1d",arrIn1),"set_int4Arr_1d")
       call check(get(MAIN_MOD,"x_int4Arr_1d",arrOut1),"get_int4Arr_1d")
       
-      do i=1,arrSize
-         if(arrIn1(i)/=arrOut1(i)) then
-            call check(FAILURE,"set_int4Arr_1d does not match get_int4Arr_1d")
-            exit
-         end if
-      end do
+      if(allocated(arrOut1))then
+         outer1: do i=1,arrSize
+            if(arrIn1(i)/=arrOut1(i)) then
+               call check(FAILURE,"set_int4Arr_1d does not match get_int4Arr_1d")
+               exit outer1
+            end if
+         end do outer1
+      end if
       
       call check(set(MAIN_MOD,"x_int4Arr_2d",arrIn2),"set_int4Arr_2d")
       call check(get(MAIN_MOD,"x_int4Arr_2d",arrOut2),"get_int4Arr_2d")
       
-      do i=1,arrSize
-         do j=1,arrSize
-            if(arrIn2(i,j)/=arrOut2(i,j)) then
-               call check(NOT_IMPLEMENTED,"set_int4Arr_2d does not match get_int4Arr_2d")
-               exit
-            end if
-         end do
-      end do
+      if(allocated(arrOut2))then
+         outer2: do i=1,arrSize
+            do j=1,arrSize
+               if(arrIn2(i,j)/=arrOut2(i,j)) then
+                  call check(NOT_IMPLEMENTED,"set_int4Arr_2d does not match get_int4Arr_2d")
+                  exit outer2
+               end if
+            end do
+         end do outer2
+      end if
+      
       
       call check(set(MAIN_MOD,"x_int4Arr_3d",arrIn3),"set_int4Arr_3d")
       call check(get(MAIN_MOD,"x_int4Arr_3d",arrOut3),"get_int4Arr_3d")
       
-      do i=1,arrSize
-         do j=1,arrSize
-            do k=1,arrSize
-               if(arrIn3(i,j,k)/=arrOut3(i,j,k)) then
-                  call check(NOT_IMPLEMENTED,"set_int4Arr_3d does not match get_int4Arr_3d")
-                  exit
-               end if
+      if(allocated(arrOut3))then
+         outer3: do i=1,arrSize
+            do j=1,arrSize
+               do k=1,arrSize
+                  if(arrIn3(i,j,k)/=arrOut3(i,j,k)) then
+                     call check(NOT_IMPLEMENTED,"set_int4Arr_3d does not match get_int4Arr_3d")
+                     exit outer3
+                  end if
+               end do
             end do
-         end do
-      end do
+         end do outer3
+      end if
       
       call check(set(MAIN_MOD,"x_int4Arr_4d",arrIn4),"set_int4Arr_4d")
       call check(get(MAIN_MOD,"x_int4Arr_4d",arrOut4),"get_int4Arr_4d")
       
-      do i=1,arrSize
-         do j=1,arrSize
-            do k=1,arrSize
-               do l=1,arrSize
-                  if(arrIn4(i,j,k,l)/=arrOut4(i,j,k,l)) then
-                     call check(NOT_IMPLEMENTED,"set_int4Arr_4d does not match get_int4Arr_4d")
-                     exit
-                  end if
-               end do
-            end do
-         end do
-      end do
-      
-      call check(set(MAIN_MOD,"x_int4Arr_5d",arrIn5),"set_int4Arr_5d")
-      call check(get(MAIN_MOD,"x_int4Arr_5d",arrOut5),"get_int4Arr_5d")
-      
-      do i=1,arrSize
-         do j=1,arrSize
-            do k=1,arrSize
-               do l=1,arrSize
-                  do m=1,arrSize
-                     if(arrIn5(i,j,k,l,m)/=arrOut5(i,j,k,l,m)) then
-                        call check(NOT_IMPLEMENTED,"set_int4Arr_5d does not match get_int4Arr_5d")
-                        exit
+      if(allocated(arrOut4))then
+         outer4: do i=1,arrSize
+            do j=1,arrSize
+               do k=1,arrSize
+                  do l=1,arrSize
+                     if(arrIn4(i,j,k,l)/=arrOut4(i,j,k,l)) then
+                        call check(NOT_IMPLEMENTED,"set_int4Arr_4d does not match get_int4Arr_4d")
+                        exit outer4
                      end if
                   end do
                end do
             end do
-         end do
-      end do
+         end do outer4
+      end if
+      
+      call check(set(MAIN_MOD,"x_int4Arr_5d",arrIn5),"set_int4Arr_5d")
+      call check(get(MAIN_MOD,"x_int4Arr_5d",arrOut5),"get_int4Arr_5d")
+      
+      if(allocated(arrOut5))then
+         outer5: do i=1,arrSize
+            do j=1,arrSize
+               do k=1,arrSize
+                  do l=1,arrSize
+                     do m=1,arrSize
+                        if(arrIn5(i,j,k,l,m)/=arrOut5(i,j,k,l,m)) then
+                           call check(NOT_IMPLEMENTED,"set_int4Arr_5d does not match get_int4Arr_5d")
+                           exit outer5
+                        end if
+                     end do
+                  end do
+               end do
+            end do
+         end do outer5
+      end if
       
       
       
