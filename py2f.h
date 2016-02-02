@@ -1,10 +1,10 @@
 #include <Python.h>
 
-int c_setup();
-int c_finish();
+int c_setup(void);
+int c_finish(void);
 
 
-int c_run(const char * restrict cmd);
+int c_run(const char *restrict cmd);
 int c_dealloc(const char * restrict obj, const char * restrict name);
 
 int c_get_int(const char * restrict obj, const char * restrict name, long int * restrict value);
