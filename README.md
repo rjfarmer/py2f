@@ -6,8 +6,7 @@ Allows embedding python code inside fortran.
 make
 
 # Using
-All functions return an int error code, check against the SUCCESS 
-or FAILURE constants.
+All functions return an int error code, check against the SUCCESS constant.
 
 ## Startup
 
