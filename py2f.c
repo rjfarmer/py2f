@@ -23,6 +23,7 @@ PyObject *main_dict = NULL;
 
 int c_setup(void){
   Py_SetProgramName("python");
+  // https://docs.python.org/2/c-api/init.html
   Py_Initialize();
 
   mainmod=PyImport_ImportModule("__main__");
